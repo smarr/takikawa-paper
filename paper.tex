@@ -12,6 +12,8 @@
 \newcommand{\ie}{i.e.\xspace}
 \newcommand{\eg}{e.g.\xspace}
 
+\newcommand{\RR}[1]{{\color{red}RR: #1}}
+
 \usepackage{listings}
 \usepackage{xspace}
 
@@ -115,12 +117,12 @@
 Just-in-time compilation and optimisation in virtual machines can
 eliminate much of the overhead of transient typechecks.  Unfortunately
 the improvement is not uniform: while most typechecks can be optimised
-away, some typechecks will will significantly decrease a program's
-performance.  In this paper we investigate how benchmark results can be
-indicate which typechecks cause the most problems. Programmers could
-use these techniques to optimise their programs by removing
-typechecks, and VM engineers to identify opportunities for further
-optimisations.   
+away, some typechecks will significantly decrease a program's
+performance.  In this paper we investigate how benchmark results
+indicate which typechecks cause the most problems.
+Using these techniques,
+programmers can optimise programs by removing typechecks,
+and VM engineers can identify opportunities for compiler optimisation.   
 \end{abstract}
 
 
@@ -143,8 +145,8 @@ Moth, object-oriented programming}
 
 Gradual Typing aims to add static type annotations to dynamic languages, increasing
 their safety while maintaining flexibility
-\citep{GiladPluggable2004,Siek2006,XXXSiek2015}. 
---- or, complementarily,
+\citep{GiladPluggable2004,Siek2006,XXXSiek2015}
+or, complementarily,
 to permit dynamic type annotations within static languages, increasing
 flexibility while maintaining safety
 \citep{AbadiTOPLAS1991}.
@@ -228,6 +230,8 @@ based on the Graal and Truffle toolchain
 and developed from a Newspeak implementation based on the  Simple
 Object Machine \cite{Daloze2016,SOMns}.
 
+\subsection{Grace's Transient Type Checking}
+
 Grace is an object-oriented, imperative, educational programming
 language, with a focus on introductory programming
 courses, but also intended for more advanced study and research \citep{graceOnward12,graceSigcse13}.
@@ -243,20 +247,20 @@ and
 returns within lambdas are ``non-local'', returning to the method
 activation in which the block is instantiated \citep{bluebook}.  In
 other ways, Grace is closer to JavaScript than Smalltalk: Grace
-objects can be created from object literals, rather than by
+objects are created from object literals, rather than by
 instantiating classes \citep{Black2007-emeraldHOPL,JonesECOOP2016} and
 objects and classes can be deeply nested within each 
 other \citep{betabook}.
 
-Critically, Grace's declarations and methods' arguments
+Grace's declarations and methods' arguments
 and results can be annotated with types, and those types can be  checked
 either statically or dynamically. This means the type system is
 intrinsically gradual:%
 %
 ~type annotations should not affect the semantics of a correct
 program\citep{XXXSiek2015}, and the type system
-includes a distinguished ``{Unknown}'' type which matches any other type
-and is the implicit type for untyped program parts.
+includes a distinguished ``{Unknown}'' type which matches any type
+and is the implicit type for untyped parts of the program.
 
 The static core of Grace's type system is well-described
 elsewhere\citep{TimJonesThesis};
@@ -266,10 +270,10 @@ dynamically, from the Grace programmer's point of view.
 Grace's types are structural \citep{graceOnward12},
 that is, an object implements a type whenever it
 implements all the methods required by that type,
-rather than requiring classes or objects to declare types explicitly.
+rather than requiring classes or objects to declare types explicitly \RR{(explicitly or nominally)?}. 
 % This should say Moth's, not Grace's, but I know there is objection to that
 Grace's transient dynamic typechecks are first-order, so methods match when they have
-the same name and arity: 
+the same name and arity, while
 argument and return types are ignored.
 A type thus expresses the requests an object can respond to,
 for example whether a particular accessor is available,
@@ -289,35 +293,53 @@ Grace then checks the types of values at run time:
 To see how this works in practice, consider this code snippet, which
 will run in Grace.
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}
 def o = object {
-   method three -> Number {3} }
+   method three -> Number {3}
+}
 type ThreeString = interface {
    three -> String
 }
 def t : ThreeString = o
 printNumber (t.three)
 \end{lstlisting}
+\end{minipage}
 
-Dynamic typechecks will take place: on line 6, when object \code{o}
-initialises the variable \code{t}, we check it has the method
-\code{three}; on line 7, when the value of \code{t} is read, it must
-again have the method \code{three}; on line 2, when the \code{three}
-method requested by ``\code{t.three}'' returns, the return value must
-be a \code{Number}; and (presumably) within the definition of 
+Dynamic typechecks will take place: 
+
+\begin{itemize}
+
+\item on line 7,
+when object \code{o} initialises the variable \code{t},
+we check it has the method \code{three};
+
+\item on line 8,
+when the value of \code{t} is read,
+it must again have the method \code{three};
+
+\item on line 2,
+when the \code{three} method requested by ``\code{t.three}'' returns,
+the return value must be a \code{Number};
+and (presumably) within the definition of
 %
-\code{printNumber(n :   Number)} 
+\code{printNumber(n :   Number)}
 %
-(not shown) to check that its argument is a number. Note that we never check
+(not shown) to check that its argument is a number. 
+\end{itemize}
+
+Note that we never check
 whether e.g.\ the result of requesting ``\code{t.three}'' is actually
-a \code{String} (as one may expect from line 4) because we check
+a \code{String} (as one may expect from line 5) because we check
 only first-order types (whether objects have conforming methods) not higher-order
 types (whether those methods' argument and result types conform), and
 we check only when values flow through explicit type annotations.
-This is why the type declared in lines 3-5 is checked only on line 6
+This is why the type declared in lines 4-6 is checked only on line 7
 (where it is mentioned explicitly); and the check only requires the
 presence of a method called \code{three}, regardless of the method's
 declared return type.
+
+\subsection{Moth}
 
 Moth is a virtual machine for Grace that we are developing as a
 research platform \cite{roberts-and-co-ecoop-2019}. Like other VMs
@@ -337,28 +359,27 @@ invocation and of an object-oriented dynamic dispatch.
 
 Moth relies on a number of standard techniques for optimising
 object-oriented programs.
-''Shapes'' \citep{woss2014object} capture information about objects'
+``Shapes'' \citep{woss2014object} capture information about objects'
 structure and (runtime) 
 field types, allowing a just-in-time compiler to
-represent objects in memory similarly to C structs, and so to 
-generate highly efficient code.
+represent objects in memory similarly to C structs and, consequently,
+can generate highly efficient code.
 ``Polymorphic inline caches''
 \citep{Hoelzle:91:PIC} uses object shapes to cache the results of
 method lookups, avoiding expensive class hierarchy searches or
-indirect jumps through virtual method table. 
+indirect jumps through virtual method tables. 
 For languages built on the Truffle framework,
 Graal comes with  additional support for partial evaluation,
 which enables efficient native code generation for
 Truffle interpreters\citep{Wurthinger:2017:PPE}.
-
-
+\RR{This last sentence seems out of place, does it belong here?}
 
 \section{Evaluating Transient Typechecks}
 \label{s-eval}
 
 In our previous work \cite{roberts-and-co-ecoop-2019} we evaluated the
 performance of transient typechecks using the \AWFY
-benchmark suite, plus other
+benchmark suite \cite{Marr2016}, plus other
 benchmarks from the gradual-typing literature.
 The goal was to complement our benchmarks with additional ones that are
 used for similar experiments and can be ported to Grace.
@@ -400,11 +421,11 @@ results of this evaluation demonstrated that Moth runs programs with
 transient typechecks enabled at an overhead of of 5\% (min.\ -13\%,
 max. 79\%) over peak performance without typechecks.
 
-We did not measure programs that mix typed and untyped code because
+We did not measure programs that mixed typed and untyped code because
 with our implementation technique a fully typed program is expected to
 have the largest overhead. This is not the case for other kinds of
 gradual type checking, which have given rise to more complex
-evaluation techniques.  In particular, so-called ``Takikawa'' or
+evaluation techniques.  In particular, the so-called ``Takikawa'' or
 ``Takikawa-Greenman'' evaluation \cite{Takikawa2016,Greenman2019jfp}
 benchmarks a \emph{lattice} of $23^N$ \emph{configurations} of each
 benchmark, where a configuration is a particular mix of static and
@@ -415,13 +436,13 @@ Racket, where static vs dynamic typing is set per-module, so $N$ is
 the number of modules. Grace, following other languages such as
 Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017},
 allows programmers to choose typechecks at the level of individual
-declarations: $N$ is the number of type annotations in the program.,
+declarations: $N$ is the number of type annotations in the program,
 so checking an entire lattice for a benchmark of any size
 is infeasible.  Vitousek et.al.\ modified the Takikawa protocol for
 these kinds of languages by taking an approach based on sampling
 \cite{vitousek-transient-arXive-2019}.  The Takikawa-Vitousek protocol
 divides the number of type annotations in an fully-typed program into
-up to 100 intervals, and then randomly generates ten programs within
+a maximum of 100 intervals, and then randomly generates ten programs within
 each interval by erasing type annotations.
 
 To investigate Moth's support for transient typechecks further, we
@@ -523,8 +544,7 @@ for each typecheck in a program's source code, we were often able to
 identify that just one or two of the typechecks were responsible for
 the bimodal performance.  Based on that result, we also investigated
 individual benchmark configurations for each individual typecheck:
-these results seem to identify problematic typechecks in some but not
-all cases. 
+these results can identify problematic typechecks, but not all cases. 
 
 This is preliminary work: there are a number of threats to validity. 
 Regarding construct validity, 
@@ -532,8 +552,10 @@ our underlying
 implementation may contain undetected bugs that affect the semantics
 or performance of the gradual typing checks. Regarding internal
 validity,
-our benchmarking harness run on the same implementation is
-subject to the same issues. Regarding external validity, 
+our benchmarking harness runs on the same implementation
+and therefore is subject to the same issues.
+Regarding external validity, 
+\RR{The next two sentences seem to be in the wrong place (they state an advantage rather than a threat); maybe move them into the previous paragraph?}
 Moth is built
 on the Truffle and Graal toolchain, so we expect
 to resemble other Graal
@@ -549,14 +571,14 @@ Our benchmarks do not depend on any features of Grace
 that are not common in other gradually-typed object-oriented
 languages, but as Grace lacks a large corpus of programs the
 benchmarks are necessarily small and artificial.
-The advantage of Grace (and Moth) for this research is
+The advantage of Grace and Moth for this research is
 that their relative simplicity means we have been able to build an
 implementation that features competitive performance with significantly less
 effort than would be required for larger and more complex languages.
 
 In the future, we hope to investigate statistical techniques to
-determine the significance of each type annotation's contribution to
-programs overall performance.  We would also like to investigate 
+determine the significance of each type annotation's contribution to a
+programs overall performance. We would also like to investigate 
 
 
 \bibliography{references}
