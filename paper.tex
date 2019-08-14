@@ -273,12 +273,12 @@ either statically or dynamically. This means the type system is
 intrinsically gradual:%
 %
 ~type annotations should not affect the semantics of a correct
-program\citep{XXXSiek2015}, and the type system
+program \citep{XXXSiek2015}, and the type system
 includes a distinguished ``{Unknown}'' type which matches any other type
 and is the implicit type for untyped program parts.
 
 The static core of Grace's type system is well-described
-elsewhere\citep{TimJonesThesis};
+elsewhere \citep{TimJonesThesis};
 here we explain how
 these types can be understood 
 dynamically, from the Grace programmer's point of view.
@@ -357,7 +357,7 @@ invocation and of an object-oriented dynamic dispatch.
 
 Moth relies on a number of standard techniques for optimising
 object-oriented programs.
-''Shapes'' \citep{woss2014object} capture information about objects'
+``Shapes'' \citep{woss2014object} capture information about objects'
 structure and (run time) 
 field types, allowing a just-in-time compiler to
 represent objects in memory similarly to C structs, and so to 
@@ -369,7 +369,7 @@ indirect jumps through virtual method table.
 For languages built on the Truffle framework,
 Graal comes with  additional support for partial evaluation,
 which enables efficient native code generation for
-Truffle interpreters\citep{Wurthinger:2017:PPE}.
+Truffle interpreters \citep{Wurthinger:2017:PPE}.
 
 
 
@@ -382,7 +382,8 @@ benchmark suite, plus other
 benchmarks from the gradual-typing literature.
 The goal was to complement our benchmarks with additional ones that are
 used for similar experiments and can be ported to Grace.
-To this end, we surveyed a number of papers\citep{Takikawa2016,Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Stulova2016,Greenman2018}
+To this end, we surveyed a number of papers
+\citep{Takikawa2016,Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Stulova2016,Greenman2018}
 and selected benchmarks that have been used by multiple papers.
 Some of these benchmarks overlapped with the \AWFY suite,
 or were available in different versions.
