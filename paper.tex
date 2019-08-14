@@ -8,10 +8,21 @@
 
 
 \def\AWFY{Are\,We\,Fast\,Yet\xspace}
-
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\ie}{i.e.\xspace}
+\newcommand{\eg}{e.g.\xspace}
 
 \usepackage{listings}
+\usepackage{xspace}
 
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{codered}{rgb}{0.82,0.15,0.23}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+ 
 \lstdefinestyle{mystyle}{
     language=SAS,
     breakatwhitespace=true,
@@ -189,7 +200,7 @@ semantics.  This has lead to a significant body of research,
 on one hand developing techniques to optimise gradual typing 
 \citep{Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Greenman2018}
 and on the other hand developing techniques to evaluate the
-resulting performance  \cite{takikawa2016,Greenman2019jfp}.
+resulting performance  \cite{Takikawa2016,Greenman2019jfp}.
 
 
 This paper builds upon our recent work on optimising transient
@@ -256,7 +267,8 @@ Grace's types are structural \citep{graceOnward12},
 that is, an object implements a type whenever it
 implements all the methods required by that type,
 rather than requiring classes or objects to declare types explicitly.
-Methods match when they have the same name and arity:
+Grace's transient dynamic typechecks are first order, so methods match when they have
+the same name and arity: 
 argument and return types are ignored.
 A type thus expresses the requests an object can respond to,
 for example whether a particular accessor is available,
@@ -272,6 +284,38 @@ Grace then checks the types of values at run time:
       whenever written or read by user code.
 \end{itemize}
 
+To see how this works in practice, consider this code snippet, which
+will run in Grace.
+
+\begin{lstlisting}
+def o = object {
+   method three -> Number {3} }
+type ThreeString = interface {
+   three -> String
+}
+def t : ThreeString = o
+printNumber (t.three)
+\end{lstlisting}
+
+Dynamic typechecks will take place: on line 6, when object \code{o}
+initialises the variable \code{t}, we check it has the method
+\code{three}; on line 7, when the value of \code{t} is read, it must
+again have the method \code{three}; on line 2, when the \code{three}
+method requested by ``\code{t.three}'' returns, the return value must
+be a \code{Number}; and (presumably) within the definition of 
+%
+\code{printNumber(n :   Number)} 
+%
+(not shown) to check that its argument is a number. Note that we never check
+whether e.g.\ the result of requesting ``\code{t.three}'' is actually
+a \code{String} (as one may expect from line 4) because we check
+only first-order types (whether objects have conforming methods) not higher-order
+types (whether those methods' argument and result types conform), and
+we check only when values flow through explicit type annotations.
+This is why the type declared in lines 3-5 is checked only on line 6
+(where it is mentioned explicitly); and the check only requires the
+presence of a method called \code{three}, regardless of the method's
+declared return type.
 
 Moth is a virtual machine for Grace that we are developing as a
 research platform \cite{roberts-and-co-ecoop-2019}. Like other VMs
@@ -324,7 +368,7 @@ While not always behaviorally equivalent,
 we chose the \AWFY versions since we already used them to
 establish the performance baseline.
 The selected benchmarks as well as the papers in which they were used are shown in
-\cref{tab:gradual-benchmarks}.
+Table~\ref{tab:gradual-benchmarks}.
 
 \begin{table}[htb]
   \caption{Benchmarks selected from literature.}
@@ -351,7 +395,7 @@ ensure each benchmark is completely typed.  To assess the performance
 overhead of type checking, we compared the execution of Moth with all
 checks disabled against an execution that has all checks enabled.  The
 results of this evaluation demonstrated that Moth run programs with
-transient typechecks enabled at an overhead of of 5\% (min. −13\%,
+transient typechecks enabled at an overhead of of 5\% (min.\ -13\%,
 max. 79\%) over peak performance without typechecks.
 
 We did not measure programs that mix typed and untyped code because
@@ -359,7 +403,7 @@ with our implementation technique a fully typed program is expected to
 have the largest overhead. This is not the case for other kinds of
 gradual type checking, which have given rise to more complex
 evaluation techniques.  In particular, so-called ``Takikawa'' or
-``Takikawa-Greenman'' evaluation \cite{takikawa2016,Greenman2019jfp}
+``Takikawa-Greenman'' evaluation \cite{Takikawa2016,Greenman2019jfp}
 benchmarks a \emph{lattice} of $23^N$ \emph{configurations} of each
 benchmark. where a configuration is a particular mix of static and
 dynamically typed code.
@@ -372,7 +416,7 @@ allows programmers to choose typechecks at the level of individual
 declarations: $N$ is the number of type annotations in the program.,
 so checking an entire lattice for a benchmark of any size
 is infeasible.  Vitousek et.al.\ modified the Takikawa protocol for
-these kinds of langauges by taking an approach based on sampling
+these kinds of languages by taking an approach based on sampling
 \cite{vitousek-transient-arXive-2019}.  The Takikawa-Vitousek protocol
 divides the number of type annotations in an fully-typed program into
 up to 100 intervals, and then randomly generates ten programs within
@@ -382,27 +426,29 @@ To investigate Moth's support for transient typechecks further, we
 carried out a (small?) Takikawa-Vitousek evaluation using (some of?)
 our existing benchmarks.
 
-\textbf{
-!!!KJX: Need to update this paragraph with what we did this time around!!!.
+\textbf{!!!KJX: Need to update this paragraph with what we did this time around!!!}
 To account for the complex warmup behavior
 of modern systems\citep{Barrett:2017:VMW} as well as
 the non-determinism caused by \eg garbage collection and cache effects,
-we run each benchmark for \NumIterationsAll iterations in the same
+we run each benchmark for \textbf{$/$NumIterationsAll} iterations in the same
 VM invocation.\footnote{
-For the Higgs VM, we only use \NumIterationsHiggs iterations,
+For the Higgs VM, we only use \textbf{$/$NumIterationsHiggs} iterations,
 because of its lower performance.
 This is sufficient since Higgs's compilation approach induces less variation
 and leads to more stable measurements.}
 Afterwards, we inspected the run-time plots over the iterations
-and manually determined a cutoff of \WarmupCutOff iterations for warmup,
+and manually determined a cutoff of \textbf{$/$WarmupCutOff} iterations for warmup,
 \ie, we discard iterations with signs of compilation.
 As a result, we use a large number of data points to compute the average,
 but outliers, caused by \eg garbage collection, remain visible in the plots.
 % In this work, we do not consider startup performance,
 % because we want to assess the impact of gradual type checks
 % on the best possible performance.
-All reported averages use the geometric mean since they aggregate ratios.
+All reported averages use the geometric mean since they aggregate
+ratios.
 
+
+\textbf{
 % Yuria
 %  - Ubuntu 16.04.4, Kernel 3.13
 %  - 24 hyperthreads
@@ -421,7 +467,6 @@ Benchmarks were executed one by one to avoid interference between them.
 The analysis of the results was done with R 3.4.1,
 and plots are generated with ggplot 2.2.1 and tikzDevice 0.11.
 Our experimental setup is available online to enable reproductions.\footnote{
-  \smtodo{merge changes, and tag final version}
 \url{https://github.com/gracelang/moth-benchmarks}}
 }
 
@@ -429,7 +474,7 @@ Our experimental setup is available online to enable reproductions.\footnote{
 \section{Results}
 \label{s-overall}
 
-give overall resuslts - one page of monochromatic scatterplots one for
+give overall results - one page of monochromatic scatterplots one for
 each benchmark.
 
 need to explKn how to read scatterplots by paraphrasing
@@ -459,7 +504,7 @@ one annotation included.
    - single annotation overheads
   - using them go back to scatterplots (i.e. what you do in the latest graphs) 
 
-  - show that single annotation prediction doesn't reallty work\ldots
+  - show that single annotation prediction doesn't really work\ldots
 
 \section{Discussion and Conclusion}
 \label{s-concl}
