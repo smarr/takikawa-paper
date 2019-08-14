@@ -218,8 +218,8 @@ to validity, and concludes.
 \section{Background}
 \label{s-bg}
 
-Our work is based on Moth virtual machine 
-\cite{Roberts2017,roberts-and-co-ecoop-2019}
+Our work is based on the Moth virtual machine 
+\cite{Roberts2017,roberts-and-co-ecoop-2019},
 an implementation
 of the Grace programming language 
 \citep{graceOnward12,graceSigcse13},
@@ -240,7 +240,7 @@ all computation is via dynamically dispatched  ``method requests''
 where the object receiving the request decides which code to run,
 and
 %
-returns within lambdas that are ``non-local'', returning to the method
+returns within lambdas are ``non-local'', returning to the method
 activation in which the block is instantiated \citep{bluebook}.  In
 other ways, Grace is closer to JavaScript than Smalltalk: Grace
 objects can be created from object literals, rather than by
@@ -258,7 +258,7 @@ program\citep{XXXSiek2015}, and the type system
 includes a distinguished ``{Unknown}'' type which matches any other type
 and is the implicit type for untyped program parts.
 
-The static core of Grace's type system is well described
+The static core of Grace's type system is well-described
 elsewhere\citep{TimJonesThesis};
 here we explain how
 these types can be understood 
@@ -267,13 +267,15 @@ Grace's types are structural \citep{graceOnward12},
 that is, an object implements a type whenever it
 implements all the methods required by that type,
 rather than requiring classes or objects to declare types explicitly.
-Grace's transient dynamic typechecks are first order, so methods match when they have
+% This should say Moth's, not Grace's, but I know there is objection to that
+Grace's transient dynamic typechecks are first-order, so methods match when they have
 the same name and arity: 
 argument and return types are ignored.
 A type thus expresses the requests an object can respond to,
 for example whether a particular accessor is available,
 rather than a nominal location in an explicit inheritance hierarchy.
 
+% Ditto
 Grace then checks the types of values at run time:
 %
 \begin{itemize}
@@ -394,7 +396,7 @@ additional check to Moth that reports absent type information to
 ensure each benchmark is completely typed.  To assess the performance
 overhead of type checking, we compared the execution of Moth with all
 checks disabled against an execution that has all checks enabled.  The
-results of this evaluation demonstrated that Moth run programs with
+results of this evaluation demonstrated that Moth runs programs with
 transient typechecks enabled at an overhead of of 5\% (min.\ -13\%,
 max. 79\%) over peak performance without typechecks.
 
@@ -405,11 +407,11 @@ gradual type checking, which have given rise to more complex
 evaluation techniques.  In particular, so-called ``Takikawa'' or
 ``Takikawa-Greenman'' evaluation \cite{Takikawa2016,Greenman2019jfp}
 benchmarks a \emph{lattice} of $23^N$ \emph{configurations} of each
-benchmark. where a configuration is a particular mix of static and
+benchmark, where a configuration is a particular mix of static and
 dynamically typed code.
 
 The Takikawa evaluation protocol was originally proposed for Typed
-Racket, where static vs dynamic typing is set per module, so $N$ is
+Racket, where static vs dynamic typing is set per-module, so $N$ is
 the number of modules. Grace, following other languages such as
 Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017},
 allows programmers to choose typechecks at the level of individual
@@ -534,7 +536,7 @@ our benchmarking harness run on the same implementation is
 subject to the same issues. Regarding external validity, 
 Moth is built
 on the Truffle and Graal toolchain, so we expect
-to other Graal
+to resemble other Graal
 VMs doing similar AST-based optimizations of transient typechecks.
 Because we rely on common techniques, 
 we expect our results should be transferable to JIT implementations
