@@ -123,12 +123,21 @@
 Just-in-time compilation and optimisation in virtual machines can
 eliminate much of the overhead of transient typechecks.  Unfortunately
 the improvement is not uniform: while most typechecks can be optimised
-away, some typechecks will will significantly decrease a program's
-performance.  In this paper we investigate how benchmark results can be
-indicate which typechecks cause the most problems. Programmers could
+away, some typechecks will significantly decrease a program's
+performance.
+
+In this paper we investigate how benchmark results can be
+used to identify which typechecks cause performance issues. Programmers could
 use these techniques to optimise their programs by removing
 typechecks, and VM engineers to identify opportunities for further
-optimisations.   
+optimisations.
+
+\sm{this is much to brief for me.
+Transient typechecks is a very specific thing.
+I believe, VM people need more context here.
+It's a form of gradual typing, which requires comparably simple checks
+at run time to check type violations.
+Then, how do we investigate the issues? we should give a hint what the solution is. otherwise, the sentence in using these techniques doesn't make sense to me, because we didn't say anything about them.}
 \end{abstract}
 
 
