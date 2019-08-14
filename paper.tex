@@ -1,4 +1,4 @@
-\documentclass[sigplan,10pt,review,anonymous,screen]{acmart}\settopmatter{printfolios=true}
+\documentclass[sigplan,10pt,review,screen]{acmart}\settopmatter{printfolios=true}
 
 \acmConference[VMIL'19]{ACM SIGPLAN International Workshop on Virtual Machines and Intermediate Languages}{October 22, 2019}{Athens, Greece}
 \acmYear{2019}
@@ -10,41 +10,110 @@
 \bibliographystyle{ACM-Reference-Format}
 
 \begin{document}
-\title{How slow will my transient type checks go?}
+\title{How slow do my transient type checks go?}
 
 \author{Isaac Oscar Gariano}
 \affiliation{
-  \position{PhD Student}
-  \department{School of Engineering and Computer Science} % \department is recommended
+  \department{Engineering and Computer Science} % \department is recommended
   \institution{Victoria University of Wellington}
   \country{New Zealand}
 }
 \email{Isaac@ecs.vuw.ac.nz} % \email is recommended
 
+\author{Richard Roberts}
+\affiliation{
+  \department{Computational Media Innovation Centre} % \department is recommended
+  \institution{Victoria University of Wellington}
+  \country{New Zealand}
+}
+\email{rykardo.r@gmail.com} % \email is recommended
+
+
+\author{Stefan Marr}
+\affiliation{
+  \department{School of Computing} % \department is recommended
+  \institution{University of Kent}
+  \country{s.marr@kent.ac.uk}
+}
+\email{mwh@ecs.vuw.ac.nz} % \email is recommended
+
+
+\author{Michael Homer}
+\affiliation{
+  \department{Engineering and Computer Science} % \department is recommended
+  \institution{Victoria University of Wellington}
+  \country{New Zealand}
+}
+\email{mwh@ecs.vuw.ac.nz} % \email is recommended
+
+
+
+\author{James Noble}
+\orcid{0000-0001-9036-5692}             %% \orcid is optional
+\affiliation{
+  \department{Engineering and Computer Science} % \department is recommended
+  \institution{Victoria University of Wellington}
+  \country{New Zealand}
+}
+\email{kjx@ecs.vuw.ac.nz} % \email is recommended
+
+
+
+
 \begin{abstract}
-Text of abstract \ldots.
+Just-in-time compilation and optimisation in virtual machines can
+eliminate much of the overhead of transient typechecks.  Unfortunately
+the improvement is not uniform: while most typechecks can be optimised
+away, some typechecks will will significantly decrease a program's
+performance.  In this paper we investigate how benchmark results can be
+indicate which typechecks cause the most problems. Programmers could
+use these techniques to optimise their programs by removing
+typechecks, and VM engineers to identify opportunities for further
+optimisations.   
 \end{abstract}
 
 
 %% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
+%%KJX XML IS BROKEN!!!
 \begin{CCSXML}
-<ccs2012>
-<concept>
-<concept_id>10011007.10011006.10011008</concept_id>
-<concept_desc>Software and its engineering~General programming languages</concept_desc>
-<concept_significance>500</concept_significance>
-</concept>
-<concept>
-<concept_id>10003456.10003457.10003521.10003525</concept_id>
-<concept_desc>Social and professional topics~History of programming languages</concept_desc>
-<concept_significance>300</concept_significance>
-</concept>
-</ccs2012>
 \end{CCSXML}
-\ccsdesc[500]{Software and its engineering~General programming languages}
-\ccsdesc[300]{Social and professional topics~History of programming languages}
-\keywords{keyword1, keyword2, keyword3}\maketitle
 
-Text of paper \ldots
+\ccsdesc[500]{Software and its engineering~Just-in-time compilers}
+\ccsdesc[300]{Software and its engineering~Object oriented languages}
+\ccsdesc[300]{Software and its engineering~Interpreters}
+
+\keywords{dynamic type checking, gradual types, optional types, Grace,
+Moth, object-oriented programming}
+\maketitle
+
+
+\section{Introduction}
+
+intro (short \& modified)
+
+\section{Background}
+
+BG: moth \& transient typing, probably has to inclde takikawa
+
+\section{Evaluating Transient Typechecks}
+
+test protocol
+
+\section{Results}
+
+core results - i.e. looking at one scatterplot per annotation - the original version
+   - is there a good benchmark that is small enough to fit on one page. and shows interesting results?
+
+
+\section{Individual Annotations}
+     
+   trying-to-be-cleverer results
+  - single annotation overheads
+  - using them go back to scatterplots (i.e. what you do in the latest graphs) 
+
+\section{Discussion and Conclusion}
+
+  discuccion / future work / conclusion (statistics, potentially doing this for other things)
+
 
 \end{document}
