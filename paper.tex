@@ -17,6 +17,13 @@
 \usepackage{listings}
 \usepackage{xspace}
 
+\usepackage{collab}
+
+\collabAuthor{rr}{green!60!black}{Richard}
+\collabAuthor{sm}{red}{Stefan}
+\collabAuthor{kjx}{orange}{James}
+\collabAuthor{mwh}{purple}{Michael}
+
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -83,12 +90,13 @@
 
 
 \author{Stefan Marr}
+\orcid{0000-0001-9059-5180}
 \affiliation{
   \department{School of Computing} % \department is recommended
   \institution{University of Kent}
-  \country{s.marr@kent.ac.uk}
+  \country{United Kingdom}
 }
-\email{mwh@ecs.vuw.ac.nz} % \email is recommended
+\email{s.marr@kent.ac.uk} % \email is recommended
 
 
 \author{Michael Homer}
@@ -123,6 +131,13 @@ indicate which typechecks cause the most problems.
 Using these techniques,
 programmers can optimise programs by removing typechecks,
 and VM engineers can identify opportunities for compiler optimisation.   
+
+\sm{this is much to brief for me.
+Transient typechecks is a very specific thing.
+I believe, VM people need more context here.
+It's a form of gradual typing, which requires comparably simple checks
+at run time to check type violations.
+Then, how do we investigate the issues? we should give a hint what the solution is. otherwise, the sentence in using these techniques doesn't make sense to me, because we didn't say anything about them.}
 \end{abstract}
 
 
@@ -146,7 +161,7 @@ Moth, object-oriented programming}
 Gradual Typing aims to add static type annotations to dynamic languages, increasing
 their safety while maintaining flexibility
 \citep{GiladPluggable2004,Siek2006,XXXSiek2015}
-or, complementarily,
+--- or, complementarily,
 to permit dynamic type annotations within static languages, increasing
 flexibility while maintaining safety
 \citep{AbadiTOPLAS1991}.
@@ -162,7 +177,8 @@ semantics'' as in
 %With optional or pluggable approaches such as 
 %\citeurl{TypeScript,}{TypeScript}{Microsoft}{27 June
 %2018}{https://www.typescriptlang.org/}
-TypeScript\citep{typeScriptECOOP}\,---\,
+TypeScript
+\citep{typeScriptECOOP}\,---\,
 %
 all types are erased before the execution, limiting the benefit of
 types to the statically typed parts of programs, and preventing
@@ -188,7 +204,7 @@ time, performing the checks eagerly, and giving detailed information
 about type violations as soon as possible via blame
 tracking \cite{blame2009,blameForAll2011}.
 Finally, Ductile typing
-dynamically interprets a static type system at runtime
+dynamically interprets a static type system at run time
 \cite{Ductile2011}.
 %
 %\mwh{Does a monotonic semantics fit on this spectrum somewhere?}
@@ -252,18 +268,19 @@ instantiating classes \citep{Black2007-emeraldHOPL,JonesECOOP2016} and
 objects and classes can be deeply nested within each 
 other \citep{betabook}.
 
-Grace's declarations and methods' arguments
+\paragraph{Grace's Typing}
+Critically, Grace's declarations and methods' arguments
 and results can be annotated with types, and those types can be  checked
 either statically or dynamically. This means the type system is
 intrinsically gradual:%
 %
 ~type annotations should not affect the semantics of a correct
-program\citep{XXXSiek2015}, and the type system
-includes a distinguished ``{Unknown}'' type which matches any type
+program \citep{XXXSiek2015}, and the type system
+includes a distinguished ``{Unknown}'' type which matches any other type
 and is the implicit type for untyped parts of the program.
 
 The static core of Grace's type system is well-described
-elsewhere\citep{TimJonesThesis};
+elsewhere \citep{TimJonesThesis};
 here we explain how
 these types can be understood 
 dynamically, from the Grace programmer's point of view.
@@ -339,8 +356,7 @@ This is why the type declared in lines 4-6 is checked only on line 7
 presence of a method called \code{three}, regardless of the method's
 declared return type.
 
-\subsection{Moth}
-
+\paragraph{Moth: A Grace Implementation}
 Moth is a virtual machine for Grace that we are developing as a
 research platform \cite{roberts-and-co-ecoop-2019}. Like other VMs
 based on the Truffle and Graal toolchain, Moth is a self-optimising
@@ -360,7 +376,7 @@ invocation and of an object-oriented dynamic dispatch.
 Moth relies on a number of standard techniques for optimising
 object-oriented programs.
 ``Shapes'' \citep{woss2014object} capture information about objects'
-structure and (runtime) 
+structure and (run-time) 
 field types, allowing a just-in-time compiler to
 represent objects in memory similarly to C structs and, consequently,
 can generate highly efficient code.
@@ -383,7 +399,8 @@ benchmark suite \cite{Marr2016}, plus other
 benchmarks from the gradual-typing literature.
 The goal was to complement our benchmarks with additional ones that are
 used for similar experiments and can be ported to Grace.
-To this end, we surveyed a number of papers\citep{Takikawa2016,Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Stulova2016,Greenman2018}
+To this end, we surveyed a number of papers
+\citep{Takikawa2016,Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Stulova2016,Greenman2018}
 and selected benchmarks that have been used by multiple papers.
 Some of these benchmarks overlapped with the \AWFY suite,
 or were available in different versions.
@@ -438,7 +455,7 @@ Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017},
 allows programmers to choose typechecks at the level of individual
 declarations: $N$ is the number of type annotations in the program,
 so checking an entire lattice for a benchmark of any size
-is infeasible.  Vitousek et.al.\ modified the Takikawa protocol for
+is infeasible.  Vitousek et al.\ modified the Takikawa protocol for
 these kinds of languages by taking an approach based on sampling
 \cite{vitousek-transient-arXive-2019}.  The Takikawa-Vitousek protocol
 divides the number of type annotations in an fully-typed program into
@@ -484,7 +501,7 @@ All experiments were executed on a machine running Ubuntu Linux 16.04.4,
 with Kernel 3.13.
 The machine has two Intel Xeon E5-2620 v3 2.40GHz,
 with 6 cores each, for a total of 24 hyperthreads.
-We used ReBench 0.10.1\citep{ReBench:2018}, Java 1.8.0\_171, Graal 0.33 (\code{a13b888}),
+We used ReBench 1.0 \citep{ReBench:2018}, Java 1.8.0\_171, Graal 0.33 (\code{a13b888}),
 Node.js 10.4, and Higgs from 9 May 2018 (\code{aa95240}).
 Benchmarks were executed one by one to avoid interference between them.
 The analysis of the results was done with R 3.4.1,
