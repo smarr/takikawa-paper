@@ -4,3 +4,6 @@
 *.aux
 *.out
 *.pdf
+*.bbl
+*.blg
+__pycache__
