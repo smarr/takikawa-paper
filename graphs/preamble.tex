@@ -1,0 +1,54 @@
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+%\usepgfplotslibrary{external} 
+%\tikzexternalize[prefix=pgfplots-cache/]
+
+% Available ACM colours: ACMBlue, ACMYellow, ACMOrange, ACMRed, ACMLightBlue, ACMGreen, ACMPurple and ACMDarkBlue
+\colorlet{GraphNormal}{ACMRed} % Normal colour when I don't care about having multiple colours
+
+\pgfplotsset{%
+% WARNING: do not put empty lines here, and make sure each = ... is terminated with a comma!
+	every axis/.append style = {% options for all axes/graphs
+		cycle list={}, tick align=center, xtick pos = bottom, enlarge x limits=false, ymin=0, axis on top,%
+		every axis plot/.style={GraphNormal},%
+		every tick label/.append style={font=\tiny},%
+		every axis label/.append style={font=\tiny},%
+	},%
+	%
+	Full Left/.style = {%
+		ymax={#1}, axis y line*=left, height=3.2cm, width=5.9cm, try min ticks=5},%
+	Right Axis/.style = {%
+		axis y line*=right, axis x line=none, xmin=0, xmax=100},%
+	%
+	Scatter/.style = {%
+		every axis plot/.append style={only marks}, mark=o,
+		xticklabel={$\pgfmathprintnumber{\tick}$\%}},%
+	%
+	Full Scatter Left/.style = {Scatter, Full Left={#1},
+		enlarge x limits={abs=2pt}, every axis plot/.append style={mark size={1pt}}},%
+	%
+	Full Scatter Right/.style       = {Full Scatter Left={#1},        Right Axis},%
+	% Variants of the above that contain axis labels
+	Full Scatter Left Edge/.style   = {Full Scatter Left={#1},        ylabel={Average Time (ms)}},%
+	Full Scatter Left Bottom/.style = {Full Scatter Left={#1},        xlabel={Type Annotations}},%
+	Full Scatter Left Corner/.style = {Full Scatter Left Bottom={#1}, Full Scatter Left Edge={#1}},%
+	Full Scatter Right Edge/.style  = {Full Scatter Right={#1},       ylabel={Relative to 0\% Typed}},%
+	%
+	%
+	Column/.style n args = {2}{%
+		const plot, every axis plot/.append style={draw=GraphNormal, no markers, fill=GraphNormal!40}},%
+	%
+	Full Column Left/.style 2 args        = {Column, Full Left={#1},           xtick distance={#2}},%
+	Full Column Right/.style              = {Full Column Left={#1}{1},         Right Axis},%
+	% Variants of the above that contain axis labels
+	Full Column Left Edge/.style 2 args   = {Full Column Left={#1}{#2},        ylabel={Average Time (ms)}},%
+	Full Column Left Bottom/.style 2 args = {Full Column Left={#1}{#2},        xlabel={Type Annotation Index}},%
+	Full Column Left Corner/.style 2 args = {Full Column Left Bottom={#1}{#2}, Full Column Left Edge={#1}{#2}},%
+	Full Column Right Edge/.style         = {Full Column Right={#1},           ylabel={Relative to Untyped}},%
+}
+
+\newcommand\DOUBLEAXIS[3]{%
+	\begin{axis}[#1]#3\end{axis}%
+	\begin{axis}[#2]\end{axis}}
+
+\newcommand\GRAPHS[1]{\null\hfill\begin{tikzpicture}[ampersand replacement=\&]\matrix{#1\\};\end{tikzpicture}\null\hfill}
