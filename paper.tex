@@ -445,53 +445,65 @@ or fewer if the benchmark has less than 11 types.
 We did an even split so that for each interval $i \ge 1$ and $i$ < $N$, we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to choose the type annotations each configuration contained randomly, and we ensured that no duplicate configurations were generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark (or 97 in the case of our Storage benchmark, since it only has 10 type annotations).
 
 \subsection{The Benchmarks}
-In our previous work \cite{roberts-and-co-ecoop-2019}, we evaluated the performance of transient type checks using 21 benchmarks. We started with the 14 benchmarks of the \AWFY
-benchmark suite \cite{Marr2016}: Bounce, CD, DeltaBlue, GraphSearch, Havlak, Json, List, Mandelbrot, NBody, Permute, Richards, Sieve, Storage and Towers benchmarks. We added another \ugh{nine}\sm{14 plus 9 isn't 21} benchmarks taken from the gradual-typing literature.\sm{it's also unclear whether this is about previous work or what we do now.}
-Our goal was to complement the \AWFY with additional ones that are used for similar experiments and can be ported to Grace.
-We surveyed a number of papers
-\citep{Takikawa2016,Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Stulova2016,Greenman2018}
-and selected additional benchmarks that have been used by multiple papers.
-Two of these benchmarks (NBody and Sieve) overlapped with the \AWFY suite,
-or were available in different versions.
-While not always behaviourally equivalent,
-we chose the \AWFY versions since we already used them to
-establish a performance baseline.
-The selected benchmarks as well as the papers in which they were used are shown in
-Table~\ref{tab:gradual-benchmarks}.
-\sm{this paragraph needs to be cleaned up.
-We need to say what we use now. Clearly, and not intermingled with previous work.
-And then, afterwards we can say whether this is the same we did before. or how it differs.
-}
 
-\begin{table}[htb]
-  \caption{Benchmarks selected from literature.}
-  \label{tab:gradual-benchmarks}
-  \begin{center}
-    \begin{tabular}{l l r}
-      Fannkuch & \cite{Vitousek2017,Greenman2018} \\
-      Float & \cite{Vitousek2017,Muehlboeck2017,Greenman2018} \\
-      Go & \cite{Vitousek2017,Muehlboeck2017,Greenman2018} \\
-      NBody & \cite{Kuhlenschmidt:2018:preprint,Vitousek2017,Greenman2018} & used \cite{Marr2016} \\
-      Queens & \cite{Vitousek2017,Muehlboeck2017,Greenman2018} & used \cite{Marr2016} \\
-      PyStone & \cite{Vitousek2017,Muehlboeck2017,Greenman2018} \\
-      Sieve & \cite{Takikawa2016,Muehlboeck2017,Bauman2017,Richards2017,Greenman2019jfp} & used \cite{Marr2016} \\
-      Snake & \cite{Takikawa2016,Muehlboeck2017,Bauman2017,Richards2017,Greenman2019jfp} \\
-      SpectralNorm & \cite{Vitousek2017,Muehlboeck2017,Greenman2018} \\
-    \end{tabular}
-  \end{center}
-\end{table}
+For this work, we rely on the benchmark suite compiled for previous work
+\cite{roberts-and-co-ecoop-2019}.
+It is a collection of 21 benchmarks in total,
+derived from the \AWFY
+benchmark suite \cite{Marr2016} and other benchmarks
+from the gradual-typing literature.
 
-The benchmarks were modified to have complete type information.  To
-ensure correctness and completeness of these experiments, we ensured that each benchmark is completely typed.  To assess the performance
-overhead of type checking, we compared the execution of Moth with all
-checks disabled against an execution that has all checks enabled.  The
-results of this evaluation demonstrated that Moth's transient type checking has an overhead of 5\% (min.\ -13\%,
-max. 79\%) compared to Moth's peak performance with type checking disabled.
+% In our previous work , we evaluated the performance of transient type checks using 21 benchmarks. We started with the 14 benchmarks of the : Bounce, CD, DeltaBlue, GraphSearch, Havlak, Json, List, Mandelbrot, NBody, Permute, Richards, Sieve, Storage and Towers benchmarks. We added another \ugh{nine}\sm{14 plus 9 isn't 21} benchmarks taken from the gradual-typing literature.\sm{it's also unclear whether this is about previous work or what we do now.}
+% Our goal was to complement the \AWFY with additional ones that are used for similar experiments and can be ported to Grace.
+% We surveyed a number of papers
+% \citep{Takikawa2016,Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Stulova2016,Greenman2018}
+% and selected additional benchmarks that have been used by multiple papers.
+% Two of these benchmarks (NBody and Sieve) overlapped with the \AWFY suite,
+% or were available in different versions.
+% While not always behaviourally equivalent,
+% we chose the \AWFY versions since we already used them to
+% establish a performance baseline.
+% The selected benchmarks as well as the papers in which they were used are shown in
+% Table~\ref{tab:gradual-benchmarks}.
+% \sm{this paragraph needs to be cleaned up.
+% We need to say what we use now. Clearly, and not intermingled with previous work.
+% And then, afterwards we can say whether this is the same we did before. or how it differs.
+% }
+%
+% \begin{table}[htb]
+%   \caption{Benchmarks selected from literature.}
+%   \label{tab:gradual-benchmarks}
+%   \begin{center}
+%     \begin{tabular}{l l r}
+%       Fannkuch & \cite{Vitousek2017,Greenman2018} \\
+%       Float & \cite{Vitousek2017,Muehlboeck2017,Greenman2018} \\
+%       Go & \cite{Vitousek2017,Muehlboeck2017,Greenman2018} \\
+%       NBody & \cite{Kuhlenschmidt:2018:preprint,Vitousek2017,Greenman2018} & used \cite{Marr2016} \\
+%       Queens & \cite{Vitousek2017,Muehlboeck2017,Greenman2018} & used \cite{Marr2016} \\
+%       PyStone & \cite{Vitousek2017,Muehlboeck2017,Greenman2018} \\
+%       Sieve & \cite{Takikawa2016,Muehlboeck2017,Bauman2017,Richards2017,Greenman2019jfp} & used \cite{Marr2016} \\
+%       Snake & \cite{Takikawa2016,Muehlboeck2017,Bauman2017,Richards2017,Greenman2019jfp} \\
+%       SpectralNorm & \cite{Vitousek2017,Muehlboeck2017,Greenman2018} \\
+%     \end{tabular}
+%   \end{center}
+% \end{table}
 
-We did not measure programs that mixed typed and untyped code because
-with our implementation technique we expected fully typed programs to
-have the largest overhead, which is not the case for other kinds of
-gradual type checking.
+Each benchmark has a complete set of type annotations,
+\ie, all possible type annotations are present,
+which is verified in the parser.
+
+In our previous work, we \cite{roberts-and-co-ecoop-2019}
+we determined that the overhead of type checking on Moth is on average
+of 5\% (min.\ -13\%, max. 79\%).
+This compares the peak performance of Moth with all
+checks disabled against an execution that has all checks enabled. 
+%  The
+% results of this evaluation demonstrated that Moth's transient type checking has an overhead  compared to Moth's peak performance with type checking disabled.
+%
+% We did not measure programs that mixed typed and untyped code because
+% with our implementation technique we expected fully typed programs to
+% have the largest overhead, which is not the case for other kinds of
+% gradual type checking.
 
 \subsection{Experimental Set Up}
 As in our previous work \cite{roberts-and-co-ecoop-2019} which used the same set of benchmarks, to account for the complex warmup behaviour of modern systems \citep{Barrett:2017:VMW} as well as
