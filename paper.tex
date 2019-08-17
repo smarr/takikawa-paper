@@ -487,12 +487,12 @@ To enable reproductions, the scripts we used to generate and run our experiments
 
 \begin{figure*}
 	\input{graphs/full-scatter}
-	\caption{Graphs of (at most) 102 configurations in the typing latices for each benchmark. Time is measured as the mean of the 351\textsuperscript{st} to the 1,000\textsuperscript{th} benchmark iteration under a single invocation of Moth (lower is better).}
+	\caption{Graphs of (at most) 102 configurations in the typing lattices for each benchmark. Time is measured as the mean of the 351\textsuperscript{st} to the 1,000\textsuperscript{th} benchmark iteration under a single invocation of Moth (lower is better).}
 	\label{f:full}
 \end{figure*}
-The results for the performance of our sample of typing lattice configurations are presented in figure~\ref{f:full}. Following \cite{vitousek-transient-arXive-2019}, the points on each graph show the average execution of each individual configuration. The x-axis represents the proportion of type annotations for each configuration, with the left and right most points showing the times for the fully untyped and typed configurations respectively. The execution time in milliseconds is shown on the left y-axes, and time relative to the fully untyped configuration is shown on the right y-axes.
+The results for the performance of our sample of typing lattice configurations are presented in figure~\ref{f:full}. Following \cite{vitousek-transient-arXive-2019}, the points on each graph show the average execution of each individual configuration. The x-axis represents the proportion of type annotations for each configuration, with the left- and right-most points showing the times for the fully untyped and typed configurations respectively. The execution time in milliseconds is shown on the left y-axes, and time relative to the fully untyped configuration is shown on the right y-axes.
 
-Most of the graphs are essentially horizontal lines, indicating that the overhead of including type annotations is negligible. The plots for CD and Richards show a roughly linear increase, however, i.e.\ for these two benchmarks, adding type annotations increases performance linearly. On the other hand, the plots for Go, Permute, DeltaBlue, and Storage show \emph{decreases}: i.e. adding more type annotations \emph{increases} performance of these benchmarks.
+Most of the graphs are essentially horizontal lines, indicating that the overhead of including type annotations is negligible. The plots for CD and Richards show a roughly linear increase, however, i.e.\ for these two benchmarks, adding type annotations reduces performance linearly. On the other hand, the plots for Go, Permute, DeltaBlue, and Storage show \emph{decreases}: i.e. adding more type annotations \emph{improves} performance of these benchmarks.
 
 Of particular note is that some of the graphs (Permute, Storage, Snake, Towers, and Richards) appear to show bimodal performance profiles, that is, two separate roughly horizontal lines. Presumably Moth can remove all the overhead from some configurations, but in others there must be one or more type checks that cannot be optimised away. List appears to have three performance modes: most of the configurations up to about 60\% annotations perform at roughly the same speed as untyped code; most configurations above 70\% perform 1.8 times more slowly than untyped code; and then across all annotation percentages there are configurations that perform roughly 1.5 times slower than the untyped baseline.
 
@@ -503,9 +503,8 @@ Of particular note is that some of the graphs (Permute, Storage, Snake, Towers, 
 	\caption{Graphs of typing latices and performance with only an individual type annotation.}
 	\label{f:pattern}		
 \end{figure*}
-Figures 
 
-We hypothesise that the tri/bi-modal graphs shown in figure~\ref{f:full}, are caused by individual type annotations: i.e. certain annotations have a significant effect on performance. In order to investigate this, we ran further experiments by testing configurations with each \emph{individual} type annotation enable, and all others removed, we then used this information to approximate and see if this appears to show a relation with the results across the typing lattice.
+We hypothesise that the tri/bi-modal graphs shown in figure~\ref{f:full} are caused by individual type annotations: that is, particular annotations have a significant effect on performance. In order to investigate this, we ran further experiments by testing configurations with each \emph{individual} type annotation enabled, and all others removed, and we then used this information to approximate and see whether this appears to show a relation with the results across the typing lattice.
 
 Firgure X shows the patterns we were able to identify, in particular...
 
