@@ -524,7 +524,12 @@ We used the same version of Moth as previously, together with ReBench 1.0 \citep
 	\caption{Graphs of (at most) 102 configurations in the typing lattices for each benchmark. Time is measured as the mean of the 351\textsuperscript{st} to the 1,000\textsuperscript{th} benchmark iteration under a single invocation of Moth (lower is better).}
 	\label{f:full}
 \end{figure*}
-The results for the performance of our sample of typing lattice configurations are presented in figure~\ref{f:full}. Following \cite{vitousek-transient-arXive-2019}, the points on each graph show the average execution of each individual configuration. The x-axis represents the proportion of type annotations for each configuration, with the left- and right-most points showing the times for the fully untyped and typed configurations respectively. The execution time in milliseconds is shown on the left y-axes, and time relative to the fully untyped configuration is shown on the right y-axes.
+
+Before we start to investigate specific type annotations,
+we present the performance measurements of our sample of the typing lattice configurations in figure~\ref{f:full}.
+These results are the foundation for a more details analysis.
+
+Following \cite{vitousek-transient-arXive-2019}, the points on each graph in figure~\ref{f:full} show the average execution of each individual configuration. The x-axis represents the proportion of type annotations for each configuration, with the left- and right-most points showing the times for the fully untyped and typed configurations respectively. The execution time in milliseconds is shown on the left y-axes, and time relative to the fully untyped configuration is shown on the right y-axes.
 
 Most of the graphs are essentially horizontal lines, indicating that the overhead of including type annotations is negligible. The plots for CD and Richards show a roughly linear increase, however, i.e.\ for these two benchmarks, adding type annotations reduces performance linearly. On the other hand, the plots for Go, Permute, DeltaBlue, and Storage show \emph{decreases}: i.e. adding more type annotations \emph{improves} performance of these benchmarks.
 
