@@ -517,27 +517,49 @@ Of particular note is that some of the graphs (Permute, Storage, Snake, Towers, 
 \section{Individual Annotations}
 \label{s-individual}
 \begin{figure*}
-	\input{graphs/pattern}
-	\caption{Pairs of colour coded scatter and column graphs. The scatter graphs represent the performance of a sample of typing lattice. The column graphs show the performance of every configuration with only one type annotation. The scatter plots and columns graphs are colour coded based on whether a particular type annotation or two are present in the source code.}
-	\label{f:pattern}		
+        \input{graphs/pattern}
+        \caption{Pairs of colour-coded scatter and column graphs. The scatter graphs represent the performance of a sample of typing lattice. The column graphs show the performance of every configuration with only one type annotation. The scatter plots and column graphs are colour-coded based on whether a particular type annotation or two are present in the source code.}
+        \label{f:pattern}              
 \end{figure*}
-We hypothesise that the tri/bi-modal graphs, shown in figure~\ref{f:full}, are caused by individual type annotations: that is, certain annotations have a significant effect on performance. In order to identify such type annotations, for each benchmark and type annotation we manually inspected the scatter plots for the benchmark's typing lattice, coloured based on whether the chosen type annotation was present or not. This resulted in 1,775 graphs, however most of these showed no discernible pattern.
+We hypothesise that the bi/tri-modal graphs shown in figure~\ref{f:full} are caused by a few, highly significant type annotations: i.e.\ there are a very few annotaitons that determine each benchmark's performance.
 
-As an alternative, and less labour-intensive approach to identifying potentially-influential type annotations, for each type annotation we ran each benchmark with \textit{only} that type annotation present. We used the same computer and number of iterations as for the typing lattice experiments, albeit these were done on different days.
+In order to identify those type annotations, we generated coloured
+scatter plots for each benchmark based on whether each individual type
+annotation was present in that configuration or not. The position of
+the dots in each coloured plot are the same as Figure~\ref{f:full}, but
+they are coloured as to whether each annotation is there or not: This resulted in 1,775 scatterplots --- one for each type annotation for each benchmark. \kjx{if we say this, we should show a bunch for one benchmark.}
+We then manually inspected all these scatterplots,
+but unfortunately most of these showed no discernible pattern.
+\kjx{YEAH BUT SOME DID. Shouldn't we show at least one?}
 
-Figure \ref{f:pattern} shows the results of these experiments, as well as the patterns we manually identified.
 
-The column graphs show the execution time of configurations with with only a single type annotation, the x-axis indicates the index of this annotation, thus the first column represents the 1\textsubscript{st} annotation, and the last column represents the last one (in the order they appear in the source code). The y-axes for the column graphs are the same as the associated scatter graph. However, though the right y-axes for the column graphs appear to be identical the scatter plot ones, they are relative to performance results collected on different days: this was to ensure that the performance of the test computer had not changed significantly from when the typing lattice experiments were run.
+As an alternative, less labour intensive approach to identifying
+potentially influential type annotations, we measured one additional
+configuration for each type annotation in each benchmark, with only
+that single type annotation present. Our aim was to compare the overhead of
+each type annotation in isolation against the baseline without any
+type checks.
 
-For each benchmark we highlighted one or two type annotations that appear to show a pattern for the typing lattice performance, or in the case of SpectralNorm and Json had higher than usual columns. The identified types are those represented by the red and blue columns. The scatter plots are colour coded accordingly: red/blue circle represents those with the given type annotation, but not both, purple circles represent configurations with both type annotations present, and grey circles represent those with neither.
 
-As can be seen, most of the time the patterns we identified in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers and CD benchmark, there is clearly a pattern where an individual type annotation (highlighted in red) appears to be the cause of the slowest/upper half of the typing lattice graphs. For Permute there is actually a signficant performance \emph{increase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight increase in performance, but here this is caused by two type annotations (in red and blue); this does not appear to be cumulative, however, as the purple dots are around the same height as the red and blue ones: \textit{either} annotation is sufficient for the full improvement.
+% We used the same computer and number of iterations as for the typing
+% lattice experiments, albeit these were done on different days.
 
-List is interesting as it demonstrates that the red and blue type annotations both cause a significant decrease in performance, which is even greater when both are present. Richards is particularly odd as it shows a performance decrease that appears to occur when the red type annotation is present, but not the blue one.
+Figure \ref{f:pattern} shows the results of these experiments.
+%, as well as the patterns we manually identified.
+%%KJX but you haven't talked about manual patterns!
 
-Finally, for SpectralNorm and Json, although we found outliers in the column graphs (types 27 and 83, highlighted in red), we were unable to find a pattern in the typing lattice.
+This figure shows a pair of graphs for a selection of ten benchmarks: a scatterplot and a column graph.  \kjx{are they actualy histograpms? or just bar charts?}\mwh{It's a column graph, like Isaac said - histograms have a continuous axis and bar charts are spaced.}
+\kjx{argh. should figure do histograph first then scatterplot?}
+The column graphs show the execution times of each configurations for each individual annotation in a benchmark. The x-axis of the graphs indicates the index of this annotation in the order they appear in the source code. The first column represents the 1\textsubscript{st} annotation, and the last column represents the last one. The y-axes for the column graphs are the same as the associated scatter graph, showing the execution time of each configuration.\footnote{Although the right y-axes for the column graphs appear to be identical the scatter plot axes, they are relative to performance results collected on different days: this was to ensure that the performance of the test computer had not changed significantly from when the typing lattice experiments were run.}\kjx{do we need the footnote?}
 
-Note however that in the case of DeltaBlue and Richards, there are two noticeable spikes in the column graphs (at \#62 and \#24, respectively); nonetheless, we found no apparent relation between these and the typing lattice.
+For each benchmark we highlighted one or two type annotations that appear to show a pattern for the typing lattice performance, or in the case of SpectralNorm and Json had higher than usual columns. The identified types are those represented by the red and blue columns. The scatter plots are colour-coded accordingly: a red or blue circle represents those with the given type annotation, but not both, purple circles represent configurations with both type annotations present, and grey circles represent those with neither.
+
+As can be seen, most of the time the patterns we identified in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers and CD benchmark, there is clearly a pattern where an individual type annotation (highlighted in red) appears to be the cause of the slowest/upper half of the typing lattice graphs. For Permute there is actually a signficant performance \emph{increase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight increase in performance, but here this is caused by two type annotations (in red and blue), but this does not appear to be cumulative: the purple dots are about the same height as the red and blue ones, so \textit{either} annotation is sufficient for the full benefit.
+
+List is interesting as it demonstrates that the red and blue type annotations both cause a significant decrease in performance, which is even greater when both are present. Richards is particularly odd as it shows a performance decrease that appears to occur when the red type annotations is present, but not the blue one.
+
+For SpectralNorm and Json, although we found outliers in the column graphs (types 27 and 83, highlighted in red), we were unable to find a matching pattern in the configuration performance.
+Finally, for DeltaBlue and Richards, there are two noticeable spikes in the column graphs (at \#62 and \#24, respectively), however we again found no apparent relation between these outliers and the overall performance
 
 The remaining benchmarks, which we have not shown in \ref{f:pattern}, have relatively flat column graphs and we could not identify any patterns in the typing lattice. The benchmark with the greatest difference in single-type configurations relative to the untyped configuration is Storage, with a configuration only $7.9\%$ faster than the untyped baseline. However, though Storage (as shown in \ref{f:full}) appears to be bimodal like Towers, we were unable to find any relationships between its typing lattice and any individual type annotations.
 %For example for Snake, the dots covered in red (corresponding to configurations with type annotation number 61) are noticeably higher than the grey ones (those without type annotation 61), thus it appears that the 61\textsuperscript{st} type annotation causes a noticeable slowdown, which is also exemplified by the higher than average red column. The graphs for CD (type \#107), Towers (type \#7) show similar patterns. The graph for Permute is similar, but it shows that type annotation 8 actually makes the benchmarks \emph{faster}.
