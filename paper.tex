@@ -279,7 +279,12 @@ from the so-called ``curly bracket'' traditions of C, Java, and
 JavaScript, the structure of the language
 is in many ways closer to Smalltalk:
 all computation is done via dynamically dispatched  ``method requests''
-where the object receiving the request decides which they return to the point where execution first encountered the lambda \citep{bluebook}.  In
+where the object receiving the request decides which
+%kjx reverted cos edited version made no sense.
+%for this paper, we could just delete the comments about blocks if you like.
+method to run, control structures are built out of blocks (essentialy lambda expressions), and return statements are ``non-local'', returning from the lexically enclosing method \citep{bluebook}.
+%
+In
 other ways, Grace is closer to JavaScript than Smalltalk: Grace
 objects are created from object literals, rather than by
 instantiating classes \citep{Black2007-emeraldHOPL,JonesECOOP2016} and
@@ -287,14 +292,13 @@ objects and classes can be deeply nested within each
 other \citep{betabook}.
 
 \paragraph{Grace's Typing}
-Critically, in Grace, declarations, methods can be annotated with types.
+In Grace, all declarations can be annotated with types.
 As Grace is designed to support a variety of teaching methods, implementation of Grace are free to check such type annotations  statically, dynamically, or not at all.
- Thus the type system of Grace is intrinsically gradual:%
+The type system of Grace is intrinsically gradual:%
 %
 ~type annotations should not affect the semantics of a correct
-program \citep{XXXSiek2015}, and the type system
-includes a distinguished ``{Unknown}'' type which matches any other type,
-and is the default type when type annotations are omitted.
+program \citep{XXXSiek2015}. The type system
+includes a distinguished ``{Unknown}'' type which matches any other type; this unknown type is the default when type annotations are omitted.
 
 Static typing for the core of Grace's type system has been described
 elsewhere \citep{TimJonesThesis};
@@ -305,12 +309,13 @@ Grace's types are structural \citep{graceOnward12},
 that is, an object conforms to a type whenever it conforms to the ''structural`` requirements of a type,
 rather than requiring classes or objects to explicitly declare their intended type.
 
-In Grace, types specify a set of method signatures that an object must provide. Thus a type expresses the requests an object can respond to, for example whether a particular accessor is available, rather than a location in a class hierarchy.
+In Grace, types specify a set of method signatures that an object must provide. A type expresses the requests an object can respond to, for example whether a particular accessor is available, rather than a location in a class hierarchy.
 
 \paragraph{Moth's Transient Type Checking}
-Moth's implementation of transient type checks however are only only first-order, as such it only dynamically checks that an object has methods of the same name and arity as are required by a type, however any argument and return types of such methods are not checked.
+Moth's implementation of transient type checks are only only first-order.
+Moth only checks dynamically that an object has methods of the same name and arity as are required by a type:  any argument and return types of such methods are not checked.
 
-In particular, Moth performs such type checks are run time:
+In particular, Moth performs the following type checks at run time:
 \begin{itemize}
 \item when a method is requested, arguments that are passed are checked against the corresponding parameter type annotations of the called method, this is done before the body of the method is executed;
 \item when the body of a method has finished executing, but before it returns to its caller, the method's return value is checked against the return type annotation of the called method;
@@ -342,10 +347,10 @@ Moth checks that \code{o} has a 0-argument method called \code{three};
 
 \item on line 8,
 when the value of \code{t} is read,
-Moth checks that it's value (\code{o}) still has a \code{three} method;
+Moth checks that its value (\code{o}) still has a \code{three} method;
 
 \item on line 2,
-when the \code{three} method requested by ``\code{t.three}'' returns,
+when the method requested by ``\code{t.three}'' returns,
 Moth checks that returned value conforms to the \code{Number} type;
 and (presumably) within the definition of
 %
@@ -375,7 +380,7 @@ to reflect the minimal set of operations needed to execute the program
 correctly. The rewritten AST is then compiled into efficient machine
 code. This rewriting often depends on the dynamic types of the
 objects involved. In the simplest case, a ``self'' call (when one method
-on an object invokes a second method on the exact same object) will
+on an object requests a second method on the exact same object) will
 always result in executing the exact same method. Thus the called method can be inlined into
 the callee, avoiding overhead of a machine-level subroutine
 invocation and an object-oriented dynamic dispatch.
@@ -384,7 +389,7 @@ invocation and an object-oriented dynamic dispatch.
 Moth relies on a number of standard techniques for optimising
 object-oriented programs.
 ``Shapes'' \citep{woss2014object} capture information about objects'
-structure and (run time) 
+structures and (run time) 
 field types, allowing a just-in-time compiler to
 represent objects in memory similarly to C structs and, consequently,
 can generate highly efficient code.
@@ -397,23 +402,24 @@ Graal comes with  additional support for partial evaluation,
 which enables efficient native code generation for
 Truffle interpreters \citep{Wurthinger:2017:PPE}.
 \RR{This last sentence seems out of place, does it belong here?}
+\kjx{yes I think it's fine}
 
 \section{Evaluating Transient Typechecks}
 \label{s-eval}
 
 In our previous work \cite{roberts-and-co-ecoop-2019} we evaluated the
 performance of transient type checks using 21 benchmarks.
-Including the 14 benchmarks of the \AWFY
-benchmark suite \cite{Marr2016}: Bounce, CD, DeltaBlue, GraphSearch, Havlak, Json, List, Mandelbrot, NBody, Permute, Richards, Sieve, Storage and Towers benchmarks. We also used benchmarks taken from the gradual-typing literature.
-Our goal was to complement our benchmarks with additional ones that are used for similar experiments and can be ported to Grace.
-To this end, we surveyed a number of papers
+We started with the 14 benchmarks of the \AWFY
+benchmark suite \cite{Marr2016}: Bounce, CD, DeltaBlue, GraphSearch, Havlak, Json, List, Mandelbrot, NBody, Permute, Richards, Sieve, Storage and Towers benchmarks. We added another nine benchmarks taken from the gradual-typing literature.
+Our goal was to complement the \AWFY with additional ones that are used for similar experiments and can be ported to Grace.
+We surveyed a number of papers
 \citep{Takikawa2016,Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Stulova2016,Greenman2018}
-and selected 9, benchmarks that have been used by multiple papers.
+and selected additional benchmarks that have been used by multiple papers.
 Two of these benchmarks (NBody and Sieve) overlapped with the \AWFY suite,
 or were available in different versions.
 While not always behaviourally equivalent,
 we chose the \AWFY versions since we already used them to
-establish the performance baseline.
+establish a performance baseline.
 The selected benchmarks as well as the papers in which they were used are shown in
 Table~\ref{tab:gradual-benchmarks}.
 
@@ -447,7 +453,7 @@ with our implementation technique we expected fully typed programs to
 have the largest overhead. This is not the case for other kinds of
 gradual type checking, which have given rise to more complex
 evaluation techniques.  In particular, the so-called ``Takikawa'' or
-``Takikawa-Greenman'' evaluation \cite{Takikawa2016,Greenman2019jfp}
+``Takikawa-Greenman'' evaluation protocol \cite{Takikawa2016,Greenman2019jfp}
 benchmarks a \emph{lattice} of $2^N$ \emph{configurations} of each
 benchmark, where a configuration is a particular mix of static and
 dynamically typed code.
@@ -456,28 +462,27 @@ The Takikawa evaluation protocol was originally proposed for Typed
 Racket, where static vs dynamic typing is set per-module, so $N$ is
 the number of modules. Grace, following other languages such as
 Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017},
-allows programmers to choose whether each individual declaration should be type-checked: so here $N$ is the number of type annotations in the program,
-so checking an entire lattice for even a moderately sized benchmark would be infeasible.  Vitousek et al.\ modified the Takikawa protocol for
+allows programmers to choose whether each individual declaration should be type-checked. This means $N$ in Grace is the number of type annotations in the program, and so
+checking an entire lattice for even a moderately sized benchmark would be infeasible.  Vitousek et al.\ modified the Takikawa protocol for
 these kinds of languages by taking an approach based on sampling
 \cite{vitousek-transient-arXive-2019}.  The Takikawa-Vitousek protocol
-divides the number of type annotations in an fully-typed program into
+divides the number of type annotations in a fully-typed program into
 a maximum of 100 intervals, and then randomly generates ten programs within
 each interval by erasing type annotations.
 
-To investigate Moth's support for transient type checks further, we carried out a similar approach to Takikawa-Vitousek evaluation: for each benchmark we generated 100 partially typed versions (or less if the benchmark was too small). We did an even split so that for each $i \ge 1$ and $i$ < $N$ (where $N$ is the total number of type annotation), we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to randomly choose the type annotations each configuration contained, and we ensured that no duplicate configurations where generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark, (or 97 in the case of Storage, since it only has 10 type annotations).
+To investigate Moth's support for transient type checks further, we carried out a similar approach to the Takikawa-Vitousek protocol. For each benchmark we generated 100 partially typed versions (fewer if the benchmark was too small). We did an even split so that for each interval $i \ge 1$ and $i$ < $N$, we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to choose the type annotations each configuration contained randomly, and we ensured that no duplicate configurations were generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark, (or 97 in the case of Storage, since it only has 10 type annotations).
 
-As we did in our previous work \cite{roberts-and-co-ecoop-2019} which used the same set of benchmarks, to account for the complex warmup behaviour of modern systems\citep{Barrett:2017:VMW} as well as
-the non-determinism caused by \eg garbage collection and cache effects, we ran each benchmark for 1000 iterations in the same invocation of Moth, and used cut off of 350 iterations for warmup, \ie we discard the first 350 iterations, since they showed signs of compilation.
+As in our previous work \cite{roberts-and-co-ecoop-2019} which used the same set of benchmarks, to account for the complex warmup behaviour of modern systems \citep{Barrett:2017:VMW} as well as
+the non-determinism caused by \eg garbage collection and cache effects, we ran each benchmark for 1000 iterations in the same invocation of Moth, and discard the first 350 iterations to ignore warmup JIT compilation.
 
-Though though outliers, caused by \eg garbage collection, remain visible in the plots for each individual benchmark, the largest 95\% confidence interval we obtained for the arithmetic mean of any of the results for any of our experiments was $\pm3.53\%$ (for the PyStone benchmark). 
+Though outliers remain visible in the plots for each individual benchmark, the largest 95\% confidence interval we obtained for the arithmetic mean of any of the results for any of our experiments was $\pm3.53\%$ (for the PyStone benchmark). 
 
 All experiments were executed on a Windows 10 machine
 running Fedora 29 within Windows Subsystems for Linux (version 1). The machine has 
-
 one Intel Core i7-6800K @3.40GHz, with 6 cores, for a total of 12 hyperthreads. We used ReBench 1.0 \citep{ReBench:2018}, Java 1.8.0\_191 Graal 0.43.
 Benchmarks were executed one by one to avoid interference between them.
 The analysis of the results and plots where generated using Python 3.7.3 and PGFPLOTS 1.16.
-To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, is available online.\footnote{
+To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, are available online.\footnote{
 \url{https://gitlab.ecs.vuw.ac.nz/isaac/Moth-Takikawa}}
 
 
