@@ -71,7 +71,7 @@
 \bibliographystyle{ACM-Reference-Format}
 
 \begin{document}
-\title{How Slow do my Transient Type checks Go?}
+\title{How Slow do my Transient Type Checks Go?}
 
 \author[Isaac O. G.]{Isaac Oscar Gariano}
 \affiliation{
@@ -553,10 +553,7 @@ In order to identify those type annotations, we generated coloured
 scatter plots for each benchmark based on whether each individual type
 annotation was present in that configuration or not. The position of
 the dots in each coloured plot are the same as Figure~\ref{f:full}, but
-they are coloured as to whether each annotation is there or not: This resulted in 1,775 scatterplots --- one for each type annotation for each benchmark. \kjx{if we say this, we should show a bunch for one benchmark.}
-We then manually inspected all these scatterplots,
-but unfortunately most of these showed no discernible pattern.
-\kjx{YEAH BUT SOME DID. Shouldn't we show at least one?}
+they are coloured as to whether each annotation is there or not: This resulted in 1,775 scatterplots --- one for each type annotation for each benchmark. We then manually inspected all these scatterplots, though almost all of these graphs showed no discernible pattern, we were able to identify some for about a third of the benchmarks.
 
 
 As an alternative, less labour intensive approach to identifying
@@ -613,9 +610,7 @@ Their focus is typically on parallelisation opportunities,
 guided by runtime feedback, cost models, or heuristics. 
 Their large body of work \citep{Isaacs:2014:PerfViz} uses various approaches,
 though, we are not aware of work that has used an approach similar to ours.
-One may argue, this is largely a question of practicality.\sm{
-i put this in to hint at issues with usability.}
-\kjx{Hmm not sure what the last sentence here means!}
+One may argue, this is largely a question of practicality.
 
 
 
@@ -672,9 +667,6 @@ In the future, we hope to investigate statistical techniques to
 determine the significance of each type annotation's contribution to a
 programs overall performance. We would also like to investigate 
 whether this approach can assist with optimsations for programmers' day-to-day  development, or help VM engineers identifying performance bugs in the underlying virtual machines.
-\sm{is our approach practical. Is it useful for day-to-day development?
-What's its context, use, general application?}
-\kjx{filled out the last sentence}
 
 \bibliography{references}
 
