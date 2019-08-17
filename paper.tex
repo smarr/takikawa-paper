@@ -441,7 +441,7 @@ each interval by erasing type annotations.
 To identify type annotations causing anomalies,
 % To investigate Moth's support for transient type checks further, 
 we adapted the Takikawa protocol
-and take inspiration from the Takikawa-Vitousek variant.
+and took inspiration from the Takikawa-Vitousek variant.
 For each benchmark, we generated 100 partially typed versions,
 or fewer if the benchmark has less than 11 types.
 We did an even split so that for each interval $i \ge 1$ and $i$ < $N$, we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to choose the type annotations each configuration contained randomly, and we ensured that no duplicate configurations were generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark (or 97 in the case of our Storage benchmark, since it only has 10 type annotations).
@@ -529,7 +529,7 @@ We used the same version of Moth as previously, together with ReBench 1.0 \citep
 
 Before we start to investigate specific type annotations,
 we present the performance measurements of our sample of the typing lattice configurations in figure~\ref{f:full}.
-These results are the foundation for a more details analysis.
+These results are the foundation for a more detailed analysis.
 
 Following \cite{vitousek-transient-arXive-2019}, the points on each graph in figure~\ref{f:full} show the average execution of each individual configuration. The x-axis represents the proportion of type annotations for each configuration, with the left- and right-most points showing the times for the fully untyped and typed configurations respectively. The execution time in milliseconds is shown on the left y-axes, and time relative to the fully untyped configuration is shown on the right y-axes.
 
