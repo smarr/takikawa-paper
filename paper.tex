@@ -448,7 +448,7 @@ We did an even split so that for each interval $i \ge 1$ and $i$ < $N$, we gener
 
 \subsection{The Benchmarks}
 In our previous work \cite{roberts-and-co-ecoop-2019}, we evaluated the performance of transient type checks using 21 benchmarks. We started with the 14 benchmarks of the \AWFY
-benchmark suite \cite{Marr2016}: Bounce, CD, DeltaBlue, GraphSearch, Havlak, Json, List, Mandelbrot, NBody, Permute, Richards, Sieve, Storage and Towers benchmarks. We added another nine benchmarks taken from the gradual-typing literature.
+benchmark suite \cite{Marr2016}: Bounce, CD, DeltaBlue, GraphSearch, Havlak, Json, List, Mandelbrot, NBody, Permute, Richards, Sieve, Storage and Towers benchmarks. We added another \ugh{nine}\sm{14 plus 9 isn't 21} benchmarks taken from the gradual-typing literature.\sm{it's also unclear whether this is about previous work or what we do now.}
 Our goal was to complement the \AWFY with additional ones that are used for similar experiments and can be ported to Grace.
 We surveyed a number of papers
 \citep{Takikawa2016,Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Stulova2016,Greenman2018}
@@ -460,6 +460,10 @@ we chose the \AWFY versions since we already used them to
 establish a performance baseline.
 The selected benchmarks as well as the papers in which they were used are shown in
 Table~\ref{tab:gradual-benchmarks}.
+\sm{this paragraph needs to be cleaned up.
+We need to say what we use now. Clearly, and not intermingled with previous work.
+And then, afterwards we can say whether this is the same we did before. or how it differs.
+}
 
 \begin{table}[htb]
   \caption{Benchmarks selected from literature.}
