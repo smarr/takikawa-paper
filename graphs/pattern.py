@@ -2,10 +2,10 @@
 from results import *
 
 TODO = {
-	"List-23": [17, 18], "Permute-14": 8,
-	"CD-250": 107, 	"Richards-177": [172, 173], #24,
-	"Snake-70": 61,  "Towers-30": 7,
+	"Snake-70": 61, "Towers-30": 7,
+	"CD-250": 107, "Permute-14": 8,
 	"DeltaBlue-243": [154, 155], "Go-230": [31, 47],
+	"List-23": [17, 18], "Richards-177": [172, 173], #24,
 	"SpectralNorm-39": 27, "Json-134": 83}
 
 res = []
@@ -59,7 +59,7 @@ for bs, CA in TODO.items():
 		
 	res.append(double_axis(f"{cleft} = <{ymax}><{floor_round(b.types/6, 5)}>", f"\\null\\hfill<\\small({b.types} Type Annotations)>", f"{cright} = <{crel}>", 
 		plot("", *cpoints[1:], (len(r.single) - 0.5, 0), (0.5, 0)), *columns))
-	
+
 	i += 1
 	
 graphs(4, *res)

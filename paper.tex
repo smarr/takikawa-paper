@@ -471,16 +471,12 @@ To investigate Moth's support for transient type checks further, we carried out 
 As in our previous work \cite{roberts-and-co-ecoop-2019} which used the same set of benchmarks, to account for the complex warmup behaviour of modern systems \citep{Barrett:2017:VMW} as well as
 the non-determinism caused by \eg garbage collection and cache effects, we ran each benchmark for 1000 iterations in the same invocation of Moth, and discard the first 350 iterations to ignore warmup JIT compilation.
 
-Though outliers remain visible in the plots for each individual benchmark, the largest 95\% confidence interval we obtained (over the mean time after warmup) for any of experiments was $\pm3.53\%$ (for the PyStone benchmark).
+Though outliers remain visible in the plots for each individual benchmark, the largest 95\% confidence interval we obtained (over the mean time after warmup) for any of experiments was $\pm3.36\%$ (for the PyStone benchmark).
 
 All experiments were executed on a Windows 10 machine
-running Fedora 30 within Windows Subsystems for Linux (version 1). The machine has 
-an Intel Core i7-6800K @3.40GHz, with 6 cores, for a total of 12 hyperthreads. We used ReBench 1.0 \citep{ReBench:2018}, Java 1.8.0\_191 Graal 0.43.
-Benchmarks were executed one by one to avoid interference between them.
-The analysis of the results and plots where generated using Python 3.7.3 and PGFPLOTS 1.16.
-To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, are available online.\footnote{
-\url{https://gitlab.ecs.vuw.ac.nz/isaac/Moth-Takikawa}}
+running Fedora 30 within Windows Subsystems for Linux (version 1). The machine has an Intel Core i7-6800K @3.40GHz, with 6 cores, for a total of 12 hyperthreads. This computer appears to produce comparable results to the one used in our previous work, although the absolute performance is higher, the relative overhead of transient type-checks is similar.
 
+We used the same version of Moth as previously, together with ReBench 1.0 \citep{ReBench:2018}, Java 1.8.0\_191 Graal 0.43. Benchmarks were executed one by one to avoid interference between them. The analysis of the results and plots where generated using Python 3.7.3 and PGFPLOTS 1.16. To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, are available online.\footnote{\url{https://gitlab.ecs.vuw.ac.nz/isaac/Moth-Takikawa}}
 
 \section{Results}
 \label{s-overall}
@@ -495,35 +491,37 @@ The results for the performance of our sample of typing lattice configurations a
 Most of the graphs are mostly horizontal lines: indicating that the performance effect of including type annotations is negligible. However the plots for CD and Richards show a roughly linear increase: i.e. adding more type annotations to the program increases performance linearly. The plots for Go, Permute, DeltaBlue, and Storage even show \emph{decreases}: i.e. adding more type annotations can actually \emph{increase} performance. Of particular note is that some of the graphs appear to show bimodal performance profiles (Permute, Storage, Snake, Towers, and Richards), or in the case of List, trimodal.
 
 \section{Individual Annotations}
+\label{s-individual}
 \begin{figure*}
 	\input{graphs/pattern}
-	\caption{Graphs of typing latices and performance with only an individual type annotation.}
+	\caption{Pairs of colour coded scatter and column graphs. The scatter graphs represent the performance of a sample of typing lattice. The column graphs show the performance of every configuration with only one type annotation. The scatter plots and columns graphs are colour coded based on whether a particular type annotation or two are present in the source code.}
 	\label{f:pattern}		
 \end{figure*}
-Figures 
+We hypothesise that the tri/bi-modal graphs shown in figure~\ref{f:full}, are caused by individual type annotations: i.e. certain annotations have a significant effect on performance. In order to identify such type annotations, for each benchmark and type annotation, we manually inspected the scatter plots for the benchmark's typing lattice, coloured based on whether the chosen type annotation was present or not. This resulted in 1,775 graphs, however most of these showed no discernible pattern.
 
-We hypothesise that the tri/bi-modal graphs shown in figure~\ref{f:full}, are caused by individual type annotations: i.e. certain annotations have a significant effect on performance. In order to investigate this, we ran further experiments by testing configurations with each \emph{individual} type annotation enable, and all others removed, we then used this information to approximate and see if this appears to show a relation with the results across the typing lattice.
+As an alternative, and less labour intensive approach to identifying potentially influential type annotations, for each type annotation we ran each benchmark with only that type annotation present. We used the same computer and number of iterations as for the typing lattice experiments, albeit these were done on different days.
 
-Firgure X shows the patterns we were able to identify, in particular...
+Figure \ref{f:pattern} shows the results of these experiments, as well as the patterns we manually identified.
 
+The column graphs show the execution time of configurations with with only a single type annotation, the x-axis indicates the index of this annotation, thus the first column represents the 1\textsubscript{st} annotation, and the last column represents the last one (in the order they appear in the source code). The y-axes for the column graphs are the same as the associated scatter graph. However, though the right y-axes for the column graphs appear to be identical the scatter plot ones, they are relative to performance results collected on different days: this was to ensure that the performance of the test computer had not changed significantly from when the typing lattice experiments where run.
 
+For each benchmark we highlighted one or two type annotations that appear to show a pattern for the typing lattice performance, or in the case of SpectralNorm and Json had higher than usual columns. The identified types are those represented by the red and blue columns. The scatter plots are colour coded accordingly: red/blue circle represents those with the given type annotation, but not both, purple circles represent configurations with both type annotations present, and grey circles represent those with neither.
 
-\label{s-individual}
+As can bee seen, most of the time the patterns we identified in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers and CD benchmark, there is clearly a pattern where an individual type annotation (highlighted in red) appears to be the cause of the slowest/upper half of the typing lattice graphs. For permute there is actually a signficant performance \emph{incrase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight incrase in performance, but here this is caused by two type annotations (in red and blue), however this does not appear to be comulative (as indicated by the purple dots being about the same height as the red and blue ones).
 
-We hypothesised that the overhead of an individual type annotation may
-be able to predict the performance of program configurations with that
-annotation. To test this hypothesis, we constructed a series of
-configurations, one for each type annotation, with only that
-one annotation included.
+List is interesting as it demonstrates that the red and blue type annotations both cause a significant decrease in performance, which is even greater when both are present. Richards is particularly od as it shows a performance decrease that appears to occur when the red type annotations is present, but not the blue one.
 
+Finally, SpectralNorm and Json, although we found outliers in the column graphs (types 27 and 83, highlighted in red), we were unable to find a pattern in the typing lattice. 
 
+Note however that in the case of DeltaBlue and Richards, there are two noticeable spikes in the column graphs (at \#62 and \#24, respectively), however we found no apparent relation between these and the typing lattice.
 
-   trying-to-be-cleverer results
+The remaining benchmarks, which we have not shown in \ref{f:pattern}, have relatively flat column graphs and we could not identify any patterns in the typing lattice. The benchmark with the greatest difference in single type configurations relative to the untyped configuration is Storage, with a configuration only $7.9\%$ faster than the untyped baseline. However, though Storage (as shown in \ref{f:full}) appears to be bimodal like Towers, we were unable to find any relationships between its typing lattice and any individual type annotations.
+%For example for Snake, the dots covered in red (corresponding to configurations with type annotation number 61) are noticeably higher than the grey ones (those without type annotation 61), thus it appears that the 61\textsuperscript{st} type annotation causes a noticeable slowdown, which is also exemplified by the higher than average red column. The graphs for CD (type \#107), Towers (type \#7) show similar patterns. The graph for Permute is similar, but it shows that type annotation 8 actually makes the benchmarks \emph{faster}.
+%In some cases, more than two type annotations have an effect, for DeltaBlue and Go it appears that types 154/155, and 31/47 (respectively) all cause an increase in performance, but this is not cumulative.
+%However with List, the performance identified by type annotations 17 and 18 is actually comulative
 
-   - single annotation overheads
-  - using them go back to scatterplots (i.e. what you do in the latest graphs) 
-
-  - show that single annotation prediction doesn't really work\ldots
+%For most of the graphs, the identified type annotations are the same, however this is not always the case. For SpectralNorm and Json, although we found outliers in the column graphs (types 27 and 83, highlighted in red), there appears to be no relationship with the typing lattice.
+%For DeltaBlue and Richards, type annotations 62 and 24 on the column graphs appear to be significant, however we did not see any kind of pattern their.
 
 \section{Related Work}
 \label{s-rel}
