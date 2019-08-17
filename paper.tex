@@ -521,7 +521,7 @@ Of particular note is that some of the graphs (Permute, Storage, Snake, Towers, 
         \caption{Pairs of colour-coded scatter and column graphs. The scatter graphs represent the performance of a sample of typing lattice. The column graphs show the performance of every configuration with only one type annotation. The scatter plots and column graphs are colour-coded based on whether a particular type annotation or two are present in the source code.}
         \label{f:pattern}              
 \end{figure*}
-We hypothesise that the bi/tri-modal graphs shown in figure~\ref{f:full} are caused by a few, highly significant type annotations: i.e.\ there are a very few annotaitons that determine each benchmark's performance.
+We hypothesise that the bi/tri-modal graphs shown in figure~\ref{f:full} are caused by a few, highly significant type annotations: i.e.\ there are a very few annotations that determine each benchmark's performance.
 
 In order to identify those type annotations, we generated coloured
 scatter plots for each benchmark based on whether each individual type
@@ -537,8 +537,7 @@ As an alternative, less labour intensive approach to identifying
 potentially influential type annotations, we measured one additional
 configuration for each type annotation in each benchmark, with only
 that single type annotation present. Our aim was to compare the overhead of
-each type annotation in isolation against the baseline without any
-type checks.
+each type annotation in isolation against the no-typecheck baseline.
 
 
 % We used the same computer and number of iterations as for the typing
@@ -550,11 +549,11 @@ Figure \ref{f:pattern} shows the results of these experiments.
 
 This figure shows a pair of graphs for a selection of ten benchmarks: a scatterplot and a column graph.  \kjx{are they actualy histograpms? or just bar charts?}\mwh{It's a column graph, like Isaac said - histograms have a continuous axis and bar charts are spaced.}
 \kjx{argh. should figure do histograph first then scatterplot?}
-The column graphs show the execution times of each configurations for each individual annotation in a benchmark. The x-axis of the graphs indicates the index of this annotation in the order they appear in the source code. The first column represents the 1\textsubscript{st} annotation, and the last column represents the last one. The y-axes for the column graphs are the same as the associated scatter graph, showing the execution time of each configuration.\footnote{Although the right y-axes for the column graphs appear to be identical the scatter plot axes, they are relative to performance results collected on different days: this was to ensure that the performance of the test computer had not changed significantly from when the typing lattice experiments were run.}\kjx{do we need the footnote?}
+The column graphs show the execution times of each configurations for each individual annotation in a benchmark. The x-axis of the graphs indicates the index of this annotation in the order they appear in the source code. The first column represents the 1\textsubscript{st} annotation, and the last column represents the last one. The y-axes for the column graphs are the same as the associated scatter graph, showing the execution time of each configuration.\footnote{Although the right y-axes for the column graphs appear to be identical to the scatter plot axes, they are relative to performance results collected on different days: this was to ensure that the performance of the test computer had not changed significantly from when the typing lattice experiments were run.}\kjx{do we need the footnote?}
 
 For each benchmark we highlighted one or two type annotations that appear to show a pattern for the typing lattice performance, or in the case of SpectralNorm and Json had higher than usual columns. The identified types are those represented by the red and blue columns. The scatter plots are colour-coded accordingly: a red or blue circle represents those with the given type annotation, but not both, purple circles represent configurations with both type annotations present, and grey circles represent those with neither.
 
-As can be seen, most of the time the patterns we identified in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers and CD benchmark, there is clearly a pattern where an individual type annotation (highlighted in red) appears to be the cause of the slowest/upper half of the typing lattice graphs. For Permute there is actually a signficant performance \emph{increase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight increase in performance, but here this is caused by two type annotations (in red and blue), but this does not appear to be cumulative: the purple dots are about the same height as the red and blue ones, so \textit{either} annotation is sufficient for the full benefit.
+As can be seen, most of the time the patterns we identified in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers and CD benchmarks, there is clearly a pattern where an individual type annotation (highlighted in red) appears to be the cause of the slowest/upper half of the typing lattice graphs. For Permute there is actually a signficant performance \emph{increase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight increase in performance, but here this is caused by two type annotations (in red and blue); this effect does not appear to be cumulative, however: the purple dots are about the same height as the red and blue ones, so \textit{either} annotation is sufficient for the full benefit.
 
 List is interesting as it demonstrates that the red and blue type annotations both cause a significant decrease in performance, which is even greater when both are present. Richards is particularly odd as it shows a performance decrease that appears to occur when the red type annotations is present, but not the blue one.
 
