@@ -4,7 +4,7 @@
 %\tikzexternalize[prefix=pgfplots-cache/]
 
 % Available ACM colours: ACMBlue, ACMYellow, ACMOrange, ACMRed, ACMLightBlue, ACMGreen, ACMPurple and ACMDarkBlue
-\colorlet{GraphNormal}{ACMRed} % Normal colour when I don't care about having multiple colours
+\colorlet{GraphNormal}{ACMOrange} % Normal colour when I don't care about having multiple colours
 
 \colorlet{GraphBase}{gray} % The colours for no type annotation
 \colorlet{GraphA}{ACMRed}
@@ -21,8 +21,8 @@
 	},%
 	%
 	Full/.style = { % For the page of graphs for each benchmark
-		enlarge x limits={abs=2pt}, ymax={#1}, height=3.2cm, width=5.9cm,%
-		every axis plot/.style={mark size=1pt, draw=GraphNormal, fill=GraphNormal!40}},%
+		enlarge x limits={abs=1.5pt}, ymax={#1}, height=3.2cm, width=5.9cm,%
+		every axis plot/.style={very thin, mark size=0.75pt, draw=GraphNormal, fill=GraphNormal!40}},%
 	Right Axis/.style = { % For right axes
 		axis y line*=right, axis x line=none, xmin=0, xmax=100},% 
 	%
@@ -32,7 +32,7 @@
 	%
 	% Variants of the above that contain axis labels
 	Scatter Left Label/.style   = {ylabel={Average Time (ms)}},%
-	Scatter Bottom Label/.style = {xlabel={Type Annotations}},%
+	Scatter Bottom Label/.style = {xlabel={Proportion of Type Annotations}},%
 	Scatter Right Label/.style  = {ylabel={Relative to 0\% Typed}},%
 	%
 	%
@@ -46,21 +46,12 @@
 	Column Right Label/.style  = {ylabel={Relative to Untyped}},%
 	%
 	Pattern/.style = { % For the page of graphs for each benchmark
-		enlarge x limits={abs=1.5pt}, ymax={#1}, height=3.2cm, width=4.4cm, %
-		every axis plot/.style={mark size=0.75pt, draw=GraphBase, fill=GraphBase!40}},%
+		enlarge x limits={abs=1pt}, ymax={#1}, height=3.2cm, width=4.4cm, % 4.4
+		every axis plot/.style={very thin, mark size=0.5pt, draw=GraphBase, fill=GraphBase!40}},%
 	%
 	Pattern A/.style = {draw=GraphA, fill=GraphA!40, mark=*}, %
 	Pattern B/.style = {draw=GraphB, fill=GraphB!40, mark=*}, %
 	Pattern AB/.style = {draw=GraphAB, fill=GraphAB!40, mark=*}, %
-	%Pattern Left/.style = {Left Axis={#1}, height=3.2cm, width=7.9cm}, % Size for pattern graphs
-	%Full Scatter Left/.style = {Scatter, Full Left={#1},
-	%	enlarge x limits={abs=2pt}, every axis plot/.append style={mark size={1pt}}},%
-	%Full Scatter Right/.style       = {Full Scatter Left={#1},        Right Axis},%
-	%sleft = "Pattern Scatter Left"
-	%cleft = "Pattern Column Left"
-	%sright = "Pattern Scatter Right"
-	%cright = "Pattern Column Right"
-	%Pattern Scatter A, Pattern Scatter B
 }
 
 \newcommand\DOUBLEAXIS[3]{%

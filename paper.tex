@@ -463,12 +463,10 @@ To investigate Moth's support for transient type checks further, we carried out 
 As we did in our previous work \cite{roberts-and-co-ecoop-2019} which used the same set of benchmarks, to account for the complex warmup behaviour of modern systems\citep{Barrett:2017:VMW} as well as
 the non-determinism caused by \eg garbage collection and cache effects, we ran each benchmark for 1000 iterations in the same invocation of Moth, and used cut off of 350 iterations for warmup, \ie we discard the first 350 iterations, since they showed signs of compilation.
 
-Though though outliers, caused by \eg garbage collection, remain visible in the plots for each individual benchmark, the largest 95\% confidence interval we obtained for the arithmetic mean of any of the results for any of our experiments was $\pm3.53\%$ (for the PyStone benchmark). 
+Though outliers, caused by \eg garbage collection, remain visible in the plots for each individual configuration, the largest 95\% confidence interval we obtained (over the mean time after warmup) for any of experiments was $\pm3.53\%$ (for the PyStone benchmark). 
 
 All experiments were executed on a Windows 10 machine
-running Fedora 29 within Windows Subsystems for Linux (version 1). The machine has 
-
-one Intel Core i7-6800K @3.40GHz, with 6 cores, for a total of 12 hyperthreads. We used ReBench 1.0 \citep{ReBench:2018}, Java 1.8.0\_191 Graal 0.43.
+running Fedora 30 within Windows Subsystems for Linux (version 1). The machine has an Intel Core i7-6800K @3.40GHz, with 6 cores, for a total of 12 hyperthreads. We used ReBench 1.0 \citep{ReBench:2018}, Java 1.8.0\_191 Graal 0.43.
 Benchmarks were executed one by one to avoid interference between them.
 The analysis of the results and plots where generated using Python 3.7.3 and PGFPLOTS 1.16.
 To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, is available online.\footnote{
@@ -478,22 +476,29 @@ To enable reproductions, the scripts we used to generate and run our experiments
 \section{Results}
 \label{s-overall}
 
-give overall results - one page of monochromatic scatterplots one for
-each benchmark.
-
-need to explKn how to read scatterplots by paraphrasing
-\cite{vitousek-transient-arXive-2019}
-
-core results - i.e.\ looking at one scatter plot per annotation - the original version
-   - is there a good benchmark that is small enough to fit on one
-   page. and shows interesting results?
-
 \begin{figure*}
 	\input{graphs/full-scatter}
-	\caption{The graphs!}
+	\caption{Graphs of (at most) 102 configurations in the typing latices for each benchmark. Time is measured as the mean of the 351\textsuperscript{st} to the 1,000\textsuperscript{th} benchmark iteration under a single invocation of Moth (lower is better).}
+	\label{f:full}
 \end{figure*}
+The results for the performance of our sample of typing lattice configurations are presented in figure~\ref{f:full}. Following \cite{vitousek-transient-arXive-2019}, the points on each graph show the average execution if each individual configuration. The x-axis represents the proportion of type annotations for each configuration, with the left and right most points showing the times for the fully untyped and typed configurations (respective). The execution time (in milliseconds) is shown on the left y-axes, and time relative to the fully untyped configuration is shown on the right y-axes.
+
+Most of the graphs are mostly horizontal lines: indicating that the performance effect of including type annotations is negligible. However the plots for CD and Richards show a roughly linear increase: i.e. adding more type annotations to the program increases performance linearly. The plots for Go, Permute, DeltaBlue, and Storage even show \emph{decreases}: i.e. adding more type annotations can actually \emph{increase} performance. Of particular note is that some of the graphs appear to show bimodal performance profiles (Permute, Storage, Snake, Towers, and Richards), or in the case of List, trimodal.
 
 \section{Individual Annotations}
+\begin{figure*}
+	\input{graphs/pattern}
+	\caption{Graphs of typing latices and performance with only an individual type annotation.}
+	\label{f:pattern}		
+\end{figure*}
+Figures 
+
+We hypothesise that the tri/bi-modal graphs shown in figure~\ref{f:full}, are caused by individual type annotations: i.e. certain annotations have a significant effect on performance. In order to investigate this, we ran further experiments by testing configurations with each \emph{individual} type annotation enable, and all others removed, we then used this information to approximate and see if this appears to show a relation with the results across the typing lattice.
+
+Firgure X shows the patterns we were able to identify, in particular...
+
+
+
 \label{s-individual}
 
 We hypothesised that the overhead of an individual type annotation may
