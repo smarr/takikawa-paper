@@ -255,9 +255,14 @@ Specifically, the contributions of this work are:
 \begin{itemize}
   \item an approach to identify gradual type annotations
         that cause significant performance effects
-  \item adapting the Takikawa protocol for languages and implementations
-        where performance effects are dominated by type annotations instead
-        of transitions between typed and untyped modules
+  % SM: after discussion with Isaac, this was done
+  %     by some Reticulated Python paper before
+  % and Isaac's adaptation is restricted to using rounding rules
+  %    (>= 0.5 is round up) that give useful results (at least 1 type check)
+  %    for selecting the number of type checks
+  % \item adapting the Takikawa protocol for languages and implementations
+  %       where performance effects are dominated by type annotations instead
+  %       of transitions between typed and untyped modules
   \item observing that performance of small benchmarks
         with 10--250 type annotations is dominated by only
         one or two type annotations
