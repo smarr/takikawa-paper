@@ -616,26 +616,24 @@ The remaining benchmarks, which we have not shown in figure \ref{f:pattern}, hav
 \section{Related Work}
 \label{s-rel}
 
-Optimization Coaching
-\citep{St-Amour:2012:OCO} is a related approach more
-directly integrated into the language runtime and development environment.
-Optimizer Coaching uses feedback from the runtime to guide developers
-to insert or change type declarations 
-to enable a compiler to generate a more optimal program.
-In this spirit, we would eventually want to achieve the same, although
-in our case,
-we need to run full experiments to get the necessary information.
-Furthermore, we still lack the seamless integration in a development environment.
-
 The high-performance computing community has been investigating how
-tools and visualization can help developers to utilize their systems
+tools and visualisations can help developers to utilise their systems
 more efficiently \citep{Papenhausen:2016:IVT,daSilva:2019:PSV}.
 Their focus is typically on parallelisation opportunities,
 guided by runtime feedback, cost models, or heuristics. 
 Their large body of work \citep{Isaacs:2014:PerfViz} uses various approaches,
 though, we are not aware of work that has used an approach similar to ours.
-One may argue, this is largely a question of practicality.
 
+At the moment, our approach to identifing type annotations that case
+performance anomalies is not integrated into a development environment.
+Though, for instance Optimization Coaching
+\citep{St-Amour:2012:OCO} is a promising direction.
+Optimization Coaching uses feedback from the runtime to guide developers
+to insert or change type declarations 
+to enable a compiler to generate a more optimal program.
+In this spirit, we would eventually want to achieve the same, although
+in our case,
+we need to run full experiments to get the necessary information.
 
 
 \section{Discussion and Conclusion}
