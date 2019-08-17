@@ -242,6 +242,21 @@ This paper builds upon our recent work on optimising transient
 type checks \cite{Roberts2017,roberts-and-co-ecoop-2019} by
 investigating how benchmark results can be repurposed to identify which
 particular transient type checks are resistant to optimisation.
+
+Specifically, the contributions of this work are:
+
+\begin{itemize}
+  \item an approach to identify gradual type annotations
+        that cause significant performance effects
+  \item adapting the Takikawa protocol for languages and implementations
+        where performance effects are dominated by type annotations instead
+        of transitions between typed and untyped modules
+  \item observing that performance of small benchmarks
+        with 10--250 type annotations is dominated by only
+        one or two type annotations
+\end{itemize}
+
+
 The next section discusses dynamic type checks and gradual typing in
 Moth (an implementation of the Grace language), then section~\ref{s-eval} describes our benchmarking protocol. Section~\ref{s-overall} then presents the overall results of
 our benchmarks, while section~\ref{s-individual}
@@ -510,23 +525,45 @@ Of particular note is that some of the graphs (Permute, Storage, Snake, Towers, 
 	\caption{Pairs of colour coded scatter and column graphs. The scatter graphs represent the performance of a sample of the typing lattices. The column graphs show the performance of every configuration with only one type annotation. The scatter plots and column graphs are colour coded based on whether a particular type annotation or two are present in the source code.}
 	\label{f:pattern}		
 \end{figure*}
-We hypothesise that the tri/bi-modal graphs, shown in figure~\ref{f:full}, are caused by individual type annotations: that is, certain annotations have a significant effect on performance. In order to identify such type annotations, for each benchmark and type annotation we manually inspected the scatter plots for the benchmark's typing lattice, coloured based on whether the chosen type annotation was present or not. This resulted in 1,775 graphs, however most of these showed no discernible pattern.
+We hypothesise that the bi/tri-modal graphs shown in figure~\ref{f:full} are caused by a few, highly significant type annotations: i.e.\ there are a very few annotations that determine each benchmark's performance.
+
+In order to identify those type annotations, we generated coloured
+scatter plots for each benchmark based on whether each individual type
+annotation was present in that configuration or not. The position of
+the dots in each coloured plot are the same as Figure~\ref{f:full}, but
+they are coloured as to whether each annotation is there or not: This resulted in 1,775 scatterplots --- one for each type annotation for each benchmark. \kjx{if we say this, we should show a bunch for one benchmark.}
+We then manually inspected all these scatterplots,
+but unfortunately most of these showed no discernible pattern.
+\kjx{YEAH BUT SOME DID. Shouldn't we show at least one?}
+
+
+As an alternative, less labour intensive approach to identifying
+potentially influential type annotations, we measured one additional
+configuration for each type annotation in each benchmark, with only
+that single type annotation present. Our aim was to compare the overhead of
+each type annotation in isolation against the no-typecheck baseline.
 
 As an alternative, and less labour intensive approach to identifying potentially influential type annotations, for each type annotation we ran each benchmark with \textit{only} that type annotation present. We used the same computer and number of iterations as for the typing lattice experiments, albeit these were done on different days.
 
-Figure \ref{f:pattern} shows the results of these experiments, as well as the patterns we manually identified.
+% We used the same computer and number of iterations as for the typing
+% lattice experiments, albeit these were done on different days.
 
-The column graphs show the execution time of configurations with only a single type annotation, the x-axis indicates the index of this annotation, thus the first column represents the first annotation, and the last column represents the last one (in the order they appear in the source code). The y-axes for the column graphs are the same as the associated scatter graphs. However, though the right y-axes for the column graphs appear to be identical to the scatter plot ones, they are relative to performance results collected on different days: this was to ensure that the performance of the test computer had not changed significantly from when the typing lattice experiments were run.
+Figure \ref{f:pattern} shows the results of these experiments.
+%, as well as the patterns we manually identified.
+%%KJX but you haven't talked about manual patterns!
 
-For each benchmark we highlighted one or two type annotations that appear to show a pattern for the typing lattice performance, or in the case of SpectralNorm and Json had higher than usual columns. The identified types are those represented by the red and blue columns. The scatter plots are colour coded accordingly: red/blue circles represent configurations with the red/blue type annotation, but not both, purple circles represent configurations with both type annotations present, and grey circles represent those with neither.
+This figure shows a pair of graphs for a selection of ten benchmarks: a scatterplot and a column graph.
 
-As can be seen, most of the time the patterns we identified in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers, and CD benchmark, there is clearly a pattern where an individual type annotation (highlighted in red) appears to be the cause of the slowest/upper half of the typing lattice graphs. For Permute there is actually a signficant performance \emph{increase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight increase in performance, but here this is caused by two type annotations (in red and blue); this does not appear to be cumulative since the purple dots are around the same height as the red and blue ones: thus \textit{either} annotation is sufficient for the full improvement.
+The column graphs show the execution times of each configuration for each individual annotation in a benchmark. The x-axis of the graphs indicates the index of this annotation in the order they appear in the source code. The first column represents the first annotation, and the last column represents the last one. The y-axes for the column graphs are the same as the associated scatter graphs, showing the execution time of each configuration.\footnote{Although the right y-axes for the column graphs appear to be identical to the scatter plot axes, they are relative to performance results collected on different days: this was to ensure that the performance of the test computer had not changed significantly from when the typing lattice experiments were run.}
+
+For each benchmark we highlighted one or two type annotations that appear to show a pattern for the typing lattice performance, or in the case of SpectralNorm and Json had higher than usual columns. The identified types are those represented by the red and blue columns. The scatter plots are colour-coded accordingly: a red or blue circle represents configurations with the given type annotation, but not both, purple circles represent configurations with both type annotations present, and grey circles represent those with neither.
+
+As can be seen, most of the time the patterns we identified in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers and CD benchmarks, there is clearly a pattern where an individual type annotation (highlighted in red) appears to be the cause of the slowest/upper half of the typing lattice graphs. For Permute there is actually a signficant performance \emph{increase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight increase in performance, but here this is caused by two type annotations (in red and blue); this effect does not appear to be cumulative, however: the purple dots are about the same height as the red and blue ones, so \textit{either} annotation is sufficient for the full benefit.
 
 List is interesting as it demonstrates that the red and blue type annotations both cause a significant decrease in performance, which is even greater when both are present. Richards is particularly odd as it shows a performance decrease that appears to occur when the red type annotation is present, but not the blue one. We had previously identified this benchmark and the afformentioned type annotations \cite{roberts-and-co-ecoop-2019} as being the worst case for Moth.
 
-Finally, for SpectralNorm and Json, although we found outliers in the column graphs (types 27 and 83, highlighted in red), we were unable to find a pattern in the typing lattice.
-
-Note however that in the case of DeltaBlue and Richards, there are two noticeable spikes in the column graphs (at \#62 and \#24, respectively); nonetheless, we found no apparent relation between these and the typing lattice.
+For SpectralNorm and Json, although we found outliers in the column graphs (types 27 and 83, highlighted in red), we were unable to find a matching pattern in the configuration performance.
+Finally, for DeltaBlue and Richards, there are two noticeable spikes in the column graphs (at \#62 and \#24, respectively), however we again found no apparent relation between these outliers and the overall performance
 
 In particular, observe that the grey dots for Snake, Towers, Permute, DeltaBlue, Go, and List are mostly flat horizontal lines, this indicates that by simply deleting the red and blue type annotations, the performance impact of transient type checking becomes negligible. However for CD and Richards, the transient type checking overhead of the grey dots appears linear, albeit still less than with the red and blue type annotations present. Thus we can observe that usually, only a couple of type annotations are responsible for the overhead caused by Moth's transient typed checking, whereas the rest are ``free''.
 
