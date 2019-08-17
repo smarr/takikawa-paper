@@ -410,11 +410,20 @@ Since Moth is built on the Truffle framework,
 Graal comes with  additional support for partial evaluation,
 which enables efficient native code generation for
 Truffle interpreters \citep{Wurthinger:2017:PPE}.
-\RR{This last sentence seems out of place, does it belong here?}
-\kjx{yes I think it's fine}
+% SM: kjx says it's fine, so, drop for now
+% \RR{This last sentence seems out of place, does it belong here?}
+% \kjx{yes I think it's fine}
 
 \section{Experimental Methodology}
-Our methodology is built upon the so-called ``Takikawa'' or ``Takikawa-Greenman'' evaluation protocol \cite{Takikawa2016,Greenman2019jfp} benchmarks a \emph{lattice} of $2^N$ \emph{configurations} of each benchmark, where a configuration is a particular mix of static and dynamically typed code, however here we only test a relatively small sample of this lattice. Here we apply this methodology to our previous work \cite{roberts-and-co-ecoop-2019}, where we evaluated the performance of transient type checks in Moth by using a suite of benchmarks.
+
+Our goal is to identify which type annotations in Grace programs
+cause performance effects.
+To this end, we built upon the so-called ``Takikawa'' or ``Takikawa-Greenman'' evaluation protocol \cite{Takikawa2016,Greenman2019jfp}.
+It uses $2^N$ \emph{configurations} of each benchmark.
+A configuration is a particular mix of static and dynamically typed code, forming a lattice of configurations.
+We only test a relatively small sample of this lattice,
+which is in our experience sufficient to pinpoint performance anomalies caused
+by type annotations.
 
 \subsection{The Takikawa Protocol}
 The Takikawa evaluation protocol was originally proposed for Typed
@@ -429,10 +438,16 @@ divides the number of type annotations in a fully-typed program into
 a maximum of 100 intervals, and then randomly generates ten programs within
 each interval by erasing type annotations.
 
-To investigate Moth's support for transient type checks further, we carried out a similar approach to the Takikawa-Vitousek protocol. For each benchmark we generated 100 partially typed versions (fewer if the benchmark was too small). We did an even split so that for each interval $i \ge 1$ and $i$ < $N$, we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to choose the type annotations each configuration contained randomly, and we ensured that no duplicate configurations were generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark (or 97 in the case of our Storage benchmark, since it only has 10 type annotations).
+ % Here we apply this methodology to our previous work \cite{roberts-and-co-ecoop-2019}, where we evaluated the performance of transient type checks in Moth by using a suite of benchmarks.
+
+To identify type annotations causing anomalies,
+% To investigate Moth's support for transient type checks further, 
+we adapted the Takikawa-Vitousek protocol. For each benchmark we generated 100 partially typed versions,
+or fewer if the benchmark has at most 10 types.
+We did an even split so that for each interval $i \ge 1$ and $i$ < $N$, we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to choose the type annotations each configuration contained randomly, and we ensured that no duplicate configurations were generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark (or 97 in the case of our Storage benchmark, since it only has 10 type annotations).
 
 \subsection{The Benchmarks}
-In our previous work \cite{roberts-and-co-ecoop-2019} we evaluated the performance of transient type checks using 21 benchmarks. We started with the 14 benchmarks of the \AWFY
+In our previous work \cite{roberts-and-co-ecoop-2019}, we evaluated the performance of transient type checks using 21 benchmarks. We started with the 14 benchmarks of the \AWFY
 benchmark suite \cite{Marr2016}: Bounce, CD, DeltaBlue, GraphSearch, Havlak, Json, List, Mandelbrot, NBody, Permute, Richards, Sieve, Storage and Towers benchmarks. We added another nine benchmarks taken from the gradual-typing literature.
 Our goal was to complement the \AWFY with additional ones that are used for similar experiments and can be ported to Grace.
 We surveyed a number of papers
