@@ -71,7 +71,7 @@
 \bibliographystyle{ACM-Reference-Format}
 
 \begin{document}
-\title{How Slow do my Transient Typechecks Go?}
+\title{How Slow do my Transient Type checks Go?}
 
 \author[Isaac O. G.]{Isaac Oscar Gariano}
 \affiliation{
@@ -211,7 +211,7 @@ Reticulated Python also supports alternative ``monotonic'' semantics
 which mutate objects by narrowing their concrete types when passed
 into contexts with more specific types.
 On the other end of the spectrum are behavioural
-typechecks (as in Typed Racket \cite{typedScheme08,takikawa2012},
+type checks (as in Typed Racket \cite{typedScheme08,takikawa2012},
 Gradualtalk \cite{gradualtalk14}),
 and ``proxies'' (provided by Reticulated Python), which
 support higher-order semantics, retaining
@@ -246,7 +246,7 @@ particular transient type checks are resistant to optimisation.
 Specifically, the contributions of this work are:
 
 \begin{itemize}
-  \item an approach to identify gradual type annotations
+  \item an approach to identifying gradual type annotations
         that cause significant performance effects
   % SM: after discussion with Isaac, this was done
   %     by some Reticulated Python paper before
@@ -256,9 +256,7 @@ Specifically, the contributions of this work are:
   % \item adapting the Takikawa protocol for languages and implementations
   %       where performance effects are dominated by type annotations instead
   %       of transitions between typed and untyped modules
-  \item observing that performance of small benchmarks
-        with 10--250 type annotations is dominated by only
-        one or two type annotations
+  \item an observation that the overhead of Moth's transient type checking on small benchmarks (with 10--250 type annotations) is usually caused by only one or two type annotations
 \end{itemize}
 
 
@@ -443,7 +441,7 @@ each interval by erasing type annotations.
 To identify type annotations causing anomalies,
 % To investigate Moth's support for transient type checks further, 
 we adapted the Takikawa-Vitousek protocol. For each benchmark we generated 100 partially typed versions,
-or fewer if the benchmark has at most 10 types.
+or fewer if the benchmark has less than 11 types.
 We did an even split so that for each interval $i \ge 1$ and $i$ < $N$, we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to choose the type annotations each configuration contained randomly, and we ensured that no duplicate configurations were generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark (or 97 in the case of our Storage benchmark, since it only has 10 type annotations).
 
 \subsection{The Benchmarks}
@@ -563,14 +561,9 @@ configuration for each type annotation in each benchmark, with only
 that single type annotation present. Our aim was to compare the overhead of
 each type annotation in isolation against the no-typecheck baseline.
 
-As an alternative, and less labour intensive approach to identifying potentially influential type annotations, for each type annotation we ran each benchmark with \textit{only} that type annotation present. We used the same computer and number of iterations as for the typing lattice experiments, albeit these were done on different days.
+Figure \ref{f:pattern} shows the results of these experiments, together with patterns we manually identified.
 
-% We used the same computer and number of iterations as for the typing
-% lattice experiments, albeit these were done on different days.
-
-Figure \ref{f:pattern} shows the results of these experiments.
-%, as well as the patterns we manually identified.
-%%KJX but you haven't talked about manual patterns!
+The column graphs show the execution time of configurations with only a single type annotation, the x-axis indicates the index of this annotation, thus the first column represents the first annotation, and the last column represents the last one (in the order they appear in the source code). The y-axes for the column graphs are the same as the associated scatter graphs. However, though the right y-axes for the column graphs appear to be identical to the scatter plot ones, they are relative to performance results collected on different days: this was to ensure that the performance of the test computer had not changed significantly from when the typing lattice experiments were run.
 
 This figure shows a pair of graphs for a selection of ten benchmarks: a scatterplot and a column graph.
 
