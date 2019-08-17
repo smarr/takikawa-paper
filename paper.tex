@@ -123,15 +123,15 @@
 
 
 \begin{abstract}
-Just-in-time compilation and optimisation in virtual machines can
-eliminate much of the overhead of transient typechecks.  Unfortunately
-the improvement is not uniform: while most typechecks can be optimised
-away, some typechecks will significantly decrease a program's
-performance.  In this paper we investigate how benchmark results
-indicate which typechecks cause the most problems.
+One form of type checking used in gradually typed language is \emph{transient type checking}: when ever an object 'flows' through code with a type annotation, the object is dynamically checked to have the methods required by said annotation.
+
+Though na\"ive implementations of this have a high runtime overhead, just-in-time compilation and optimisation in virtual machines can eliminate much of this overhead.  Unfortunately
+the improvement is not uniform: while most type checks can be optimised
+away, some will significantly decrease a program's
+performance, and some may even increase it.  In this paper we investigate how benchmark results can be used to identify which type checks have the greatest effects on performance.
 Using these techniques,
-programmers can optimise programs by removing typechecks,
-and VM engineers can identify opportunities for compiler optimisation.   
+programmers can optimise programs by removing expensive type checks,
+and VM engineers can identify new opportunities for compiler optimisation.   
 
 \sm{this is much to brief for me.
 Transient typechecks is a very specific thing.
@@ -143,8 +143,24 @@ Then, how do we investigate the issues? we should give a hint what the solution 
 
 
 %% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
-%%KJX XML IS BROKEN!!!
 \begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10011007.10011006.10011041.10011044</concept_id>
+<concept_desc>Software and its engineering~Just-in-time compilers</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10011007.10011006.10011008.10011009.10011011</concept_id>
+<concept_desc>Software and its engineering~Object oriented languages</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+<concept>
+<concept_id>10011007.10011006.10011041.10010943</concept_id>
+<concept_desc>Software and its engineering~Interpreters</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+</ccs2012>
 \end{CCSXML}
 
 \ccsdesc[500]{Software and its engineering~Just-in-time compilers}
@@ -164,13 +180,13 @@ their safety while maintaining flexibility
 \citep{GiladPluggable2004,Siek2006,XXXSiek2015}
 --- or, complementarily,
 to permit dynamic type annotations within static languages, increasing
-flexibility while maintaining safety
+flexibility whilst maintaining safety
 \citep{AbadiTOPLAS1991}.
 
 There is a spectrum of different approaches to gradual typing
 \cite{kafka18,bensurvey18icfp}.
-At one end\,---\,``pluggable types'' as in Strongtalk \cite{strongtalk} or ``erasure
-semantics'' as in 
+At one end is ``pluggable types'' (as in Strongtalk \cite{strongtalk}) or ``erasure
+semantics'' (as in 
 %% Two important approaches are optional\citep{}
 %% and gradual typing\citep{GiladPluggable2004,Siek2006,XXXSiek2015}.
 %% These are applied to dynamic languages to reap the benefits of typing, but
@@ -179,60 +195,59 @@ semantics'' as in
 %\citeurl{TypeScript,}{TypeScript}{Microsoft}{27 June
 %2018}{https://www.typescriptlang.org/}
 TypeScript
-\citep{typeScriptECOOP}\,---\,
+\citep{typeScriptECOOP}), here
 %
-all types are erased before the execution, limiting the benefit of
-types to the statically typed parts of programs, and preventing
-programs from depending on type checks at run time.  In the middle,
-``transient'' or ``type-tag'' checks as in Reticulated Python 
+all types are erased before execution, limiting the benefit of
+types to statically typed portions of programs, whilst not providing 
+any for of run time checking.  In the middle there are
+``transient'' or ``type-tag'' checks (as in Reticulated Python)
 % and ``concrete'' checks as in Thorn
-offer first-order semantics, checking
-whether an object's type constructor or supported methods match
-explicit type declarations
+, these offer first-order semantics, by checking
+that an object's type constructor or supported methods match
+any explicit type annotations that the object flows through.
 %%%WRONG kjx
 %, and checking only when data flows through those declarations
 \cite{Siek2007,Bloom2009,concrete15,reticPython2014,Greenman2018}.
-Reticulated Python also supports an alternative ``monotonic'' semantics
-which mutates an object to narrow its concrete type when it is passed
-into a more specific type context.
-At the other end of the spectrum, behavioral
-typechecks as in Typed Racket \cite{typedScheme08,takikawa2012},
-Gradualtalk \cite{gradualtalk14},
-and Reticulated Python's proxies,
+Reticulated Python also supports alternative ``monotonic'' semantics
+which mutate objects by narrowing their concrete types when passed
+into contexts with more specific types.
+On the other end of the spectrum are behavioural
+typechecks (as in Typed Racket \cite{typedScheme08,takikawa2012},
+Gradualtalk \cite{gradualtalk14}),
+and ``proxies'' (provided by Reticulated Python), these
 support higher-order semantics, retaining
 types until run 
-time, performing the checks eagerly, and giving detailed information
-about type violations as soon as possible via blame
+time, and performing checks eagerly, thus detailed information
+about type violations can be given as soon as possible via ``blame''
 tracking \cite{blame2009,blameForAll2011}.
-Finally, Ductile typing
-dynamically interprets a static type system at run time
+Finally, there is also ductile typing,
+which dynamically interprets a static type system at run time
 \cite{Ductile2011}.
 %
 %\mwh{Does a monotonic semantics fit on this spectrum somewhere?}
 %\kjx{Not in the greenman/fellenstein spectrum, but I guess I'd put it
 %  after concrete and before behavioural. Does it matter?}
 %
-Unfortunately, any gradual system with run-time semantics
-(i.e.\ everything more complex than erasure) currently
-imposes a significant run-time performance overhead to provide those
+% This said "any", but the ecoop paper specifically showed that 
+Unfortunately, most gradual system with run-time semantics
+(as opposed to type erasure as in TypeScript) currently
+imposes a significant run-time performance overhead to provide such
 semantics.  This has lead to a significant body of research,
 on one hand developing techniques to optimise gradual typing 
 \citep{Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Greenman2018}
-and on the other hand developing techniques to evaluate the
+and on the other, developing techniques to evaluate the
 resulting performance  \cite{Takikawa2016,Greenman2019jfp}.
 
 
 This paper builds upon our recent work on optimising transient
-typechecks \cite{Roberts2017,roberts-and-co-ecoop-2019} to
-investigate how benchmark results can be repurposed to identify which
-particular transient typechecks are resistant to optimisation.
-The next section discusses dynamic typechecks and gradual typing in
-Grace, then section~\ref{s-eval} describes the benchmarking
-protocols. Section~\ref{s-overall} then presents the results of
-analysing overall benchmark results, while section~\ref{s-individual}
+type checks \cite{Roberts2017,roberts-and-co-ecoop-2019} by
+investigating how benchmark results can be repurposed to identify which
+particular transient type checks are resistant to optimisation.
+The next section discusses dynamic type checks and gradual typing in
+Moth (an implementation of the Grace language), then section~\ref{s-eval} describes our benchmarking protocol. Section~\ref{s-overall} then presents the overall results of
+our benchmarks, while section~\ref{s-individual}
 looks at the results of benchmarking individual type checks.
-Finally~\ref{s-concl} discusses our results, briefly considers threats
-to validity, and concludes.
+Section~\ref{s-rel} presents some additional related work, and finally \ref{s-concl} summarises our results, and briefly considers threats to validity.
 
 \section{Background}
 \label{s-bg}
@@ -241,28 +256,24 @@ Our work is based on the Moth virtual machine
 \cite{Roberts2017,roberts-and-co-ecoop-2019},
 an implementation
 of the Grace programming language 
-\citep{graceOnward12,graceSigcse13},
-based on the Graal and Truffle toolchain
-\cite{Wurthinger:2017:PPE,Wurthinger2013}
+\citep{graceOnward12,graceSigcse13}.
+Moth is based on the Graal and Truffle toolchain
+\cite{Wurthinger:2017:PPE,Wurthinger2013},
 and developed from a Newspeak implementation based on the  Simple
 Object Machine \cite{Daloze2016,SOMns}.
 
-\subsection{Grace's Transient Type Checking}
+\subsection{Grace and Transient Type Checking}
 
 Grace is an object-oriented, imperative, educational programming
 language, with a focus on introductory programming
 courses, but also intended for more advanced study and research \citep{graceOnward12,graceSigcse13}.
 %
 While Grace's syntax draws
-from the so-called ``curly bracket'' tradition of C, Java, and
+from the so-called ``curly bracket'' traditions of C, Java, and
 JavaScript, the structure of the language
 is in many ways closer to Smalltalk:
-all computation is via dynamically dispatched  ``method requests''
-where the object receiving the request decides which code to run,
-and
-%
-returns within lambdas are ``non-local'', returning to the method
-activation in which the block is instantiated \citep{bluebook}.  In
+all computation is done via dynamically dispatched  ``method requests''
+where the object receiving the request decides which they return to the point where execution first encountered the lambda \citep{bluebook}.  In
 other ways, Grace is closer to JavaScript than Smalltalk: Grace
 objects are created from object literals, rather than by
 instantiating classes \citep{Black2007-emeraldHOPL,JonesECOOP2016} and
@@ -270,46 +281,36 @@ objects and classes can be deeply nested within each
 other \citep{betabook}.
 
 \paragraph{Grace's Typing}
-Critically, Grace's declarations and methods' arguments
-and results can be annotated with types, and those types can be  checked
-either statically or dynamically. This means the type system is
-intrinsically gradual:%
+Critically, in Grace, declarations, methods can be annotated with types.
+As Grace is designed to support a variety of teaching methods, implementation of Grace are free to check such type annotations  statically, dynamically, or not at all.
+ Thus the type system of Grace is intrinsically gradual:%
 %
 ~type annotations should not affect the semantics of a correct
 program \citep{XXXSiek2015}, and the type system
-includes a distinguished ``{Unknown}'' type which matches any other type
-and is the implicit type for untyped parts of the program.
+includes a distinguished ``{Unknown}'' type which matches any other type,
+and is the default type when type annotations are omitted.
 
-The static core of Grace's type system is well-described
+Static typing for the core of Grace's type system has been described
 elsewhere \citep{TimJonesThesis};
 here we explain how
 these types can be understood 
 dynamically, from the Grace programmer's point of view.
 Grace's types are structural \citep{graceOnward12},
-that is, an object implements a type whenever it
-implements all the methods required by that type,
-rather than requiring classes or objects to declare types explicitly \RR{(explicitly or nominally)?}. 
-% This should say Moth's, not Grace's, but I know there is objection to that
-Grace's transient dynamic typechecks are first-order, so methods match when they have
-the same name and arity, while
-argument and return types are ignored.
-A type thus expresses the requests an object can respond to,
-for example whether a particular accessor is available,
-rather than a nominal location in an explicit inheritance hierarchy.
+that is, an object conforms to a type whenever it conforms to the ''structural`` requirements of a type,
+rather than requiring classes or objects to explicitly declare their intended type.
 
-% Ditto
-Grace then checks the types of values at run time:
-%
+In Grace, types specify a set of method signatures that an object must provide. Thus a type expresses the requests an object can respond to, for example whether a particular accessor is available, rather than a location in a class hierarchy.
+
+Moth's implementation of transient type checks however are only only first-order, as such it only dynamically checks that an object has methods of the same name and arity as are required by a type, however any argument and return types of such methods are not checked.
+
+In particular, Moth performs such type checks are run time:
 \begin{itemize}
-\item the values of arguments are checked after a method is requested, 
-      but before the body of the method is executed;
-\item the value returned by a method is checked after its body is executed; and
-\item the values of variables are checked
-      whenever written or read by user code.
+\item when a method is requested, arguments that are passed are checked against the corresponding parameter type annotations of the called method, this is done before the body of the method is executed;
+\item when the body of a method has finished executing, but before it returns to its caller, the method's return value is checked against the return type annotation of the called method;
+\item whenever a variable is read or written to, its value is checked against the type specified by the variables declaration.
 \end{itemize}
 
-To see how this works in practice, consider this code snippet, which
-will run in Grace.
+To see how this works in practice, consider this piece of Grace code:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}
@@ -324,34 +325,34 @@ printNumber (t.three)
 \end{lstlisting}
 \end{minipage}
 
-Dynamic typechecks will take place: 
+Moth will perform dynamic type checks:
 
 \begin{itemize}
 
 \item on line 7,
-when object \code{o} initialises the variable \code{t},
-we check it has the method \code{three};
+when the \code{o} object initialises the variable \code{t},
+Moth checks that \code{o} has a 0-argument method called \code{three};
 
 \item on line 8,
 when the value of \code{t} is read,
-it must again have the method \code{three};
+Moth checks that it's value (\code{o}) still has a \code{three} method;
 
 \item on line 2,
 when the \code{three} method requested by ``\code{t.three}'' returns,
-the return value must be a \code{Number};
+Moth checks that returned value conforms to the \code{Number} type;
 and (presumably) within the definition of
 %
 \code{printNumber(n :   Number)}
 %
-(not shown) to check that its argument is a number. 
+(not shown), Moth will again check that the value is a \code{Number}.
 \end{itemize}
 
 Note that we never check
-whether e.g.\ the result of requesting ``\code{t.three}'' is actually
-a \code{String} (as one may expect from line 5) because we check
-only first-order types (whether objects have conforming methods) not higher-order
-types (whether those methods' argument and result types conform), and
-we check only when values flow through explicit type annotations.
+whether the result of requesting ``\code{t.three}'' is actually
+a \code{String} (as one may expect from line 5) because Moth only performs first-order type checks
+(it checks whether objects have conforming methods) not higher-order
+checks (whether the argument and result types of methods' conform). In addition, Moth
+only checks when values flow through explicit type annotations.
 This is why the type declared in lines 4-6 is checked only on line 7
 (where it is mentioned explicitly); and the check only requires the
 presence of a method called \code{three}, regardless of the method's
@@ -549,6 +550,7 @@ one annotation included.
   - show that single annotation prediction doesn't really work\ldots
 
 \section{Related Work}
+\label{s-rel}
 
 Optimization Coaching
 \citep{St-Amour:2012:OCO} is a related approach more

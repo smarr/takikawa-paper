@@ -10,20 +10,17 @@ for b, r in sorted(RESULTS.items(), key=lambda kv: kv[0].name):
 	
 	# This is a horrible way to manually get the left y axis labels only on the leftmost graphs,
 	# and so on for the x axis, and right y axis.
-	left = "Full Scatter Left"
-	if i == 18:
-		left += " Corner"
-	elif i == 19:
-		left += " Bottom"
-	elif i % 3 == 0:
-		left += " Edge"
+	left = f"Full = <{ymax}>, Scatter"
+	if i % 3 == 0:
+		left += ", Scatter Left Label"
+	if i >= 18:
+		left += ", Scatter Bottom Label"
 		
-	right = "Full Scatter Right"
+	right = f"Full = <{yrelmax}>, Scatter, Right Axis"
 	if i % 3 == 2:
-		right += " Edge"	
+		right += ", Scatter Right Label"
 	
-	res.append(double_axis(f"{left} = <{ymax}>", f"{b.name} <\\small({b.types} Type Annotations)>", f"{right} = <{yrelmax}>", 
-			  plot("", *points)))
+	res.append(double_axis(left, f"{b.name} <\\small({b.types} Type Annotations)>", right,  plot("", *points)))
 	
 	i += 1
 	

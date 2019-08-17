@@ -6,45 +6,61 @@
 % Available ACM colours: ACMBlue, ACMYellow, ACMOrange, ACMRed, ACMLightBlue, ACMGreen, ACMPurple and ACMDarkBlue
 \colorlet{GraphNormal}{ACMRed} % Normal colour when I don't care about having multiple colours
 
+\colorlet{GraphBase}{gray} % The colours for no type annotation
+\colorlet{GraphA}{ACMRed}
+\colorlet{GraphB}{ACMBlue}
+\colorlet{GraphAB}{ACMPurple}
+
 \pgfplotsset{%
 % WARNING: do not put empty lines here, and make sure each = ... is terminated with a comma!
 	every axis/.append style = {% options for all axes/graphs
-		cycle list={}, tick align=center, xtick pos = bottom, enlarge x limits=false, ymin=0, axis on top,%
-		every axis plot/.style={GraphNormal},%
+		cycle list={}, tick align=center, xtick pos = bottom, ymin=0, axis on top,%
+		axis y line*=left, try min ticks=5,%
 		every tick label/.append style={font=\tiny},%
 		every axis label/.append style={font=\tiny},%
 	},%
 	%
-	Full Left/.style = {%
-		ymax={#1}, axis y line*=left, height=3.2cm, width=5.9cm, try min ticks=5},%
-	Right Axis/.style = {%
-		axis y line*=right, axis x line=none, xmin=0, xmax=100},%
+	Full/.style = { % For the page of graphs for each benchmark
+		enlarge x limits={abs=2pt}, ymax={#1}, height=3.2cm, width=5.9cm,%
+		every axis plot/.style={mark size=1pt, draw=GraphNormal, fill=GraphNormal!40}},%
+	Right Axis/.style = { % For right axes
+		axis y line*=right, axis x line=none, xmin=0, xmax=100},% 
 	%
-	Scatter/.style = {%
-		every axis plot/.append style={only marks}, mark=o,
-		xticklabel={$\pgfmathprintnumber{\tick}$\%}},%
+	Scatter/.style = { % For the scatter plots
+		xticklabel={$\pgfmathprintnumber{\tick}$\%},%
+		every axis plot/.append style={only marks}, mark=o},%
 	%
-	Full Scatter Left/.style = {Scatter, Full Left={#1},
-		enlarge x limits={abs=2pt}, every axis plot/.append style={mark size={1pt}}},%
-	%
-	Full Scatter Right/.style       = {Full Scatter Left={#1},        Right Axis},%
 	% Variants of the above that contain axis labels
-	Full Scatter Left Edge/.style   = {Full Scatter Left={#1},        ylabel={Average Time (ms)}},%
-	Full Scatter Left Bottom/.style = {Full Scatter Left={#1},        xlabel={Type Annotations}},%
-	Full Scatter Left Corner/.style = {Full Scatter Left Bottom={#1}, Full Scatter Left Edge={#1}},%
-	Full Scatter Right Edge/.style  = {Full Scatter Right={#1},       ylabel={Relative to 0\% Typed}},%
+	Scatter Left Label/.style   = {ylabel={Average Time (ms)}},%
+	Scatter Bottom Label/.style = {xlabel={Type Annotations}},%
+	Scatter Right Label/.style  = {ylabel={Relative to 0\% Typed}},%
 	%
 	%
-	Column/.style n args = {2}{%
-		const plot, every axis plot/.append style={draw=GraphNormal, no markers, fill=GraphNormal!40}},%
+	Column/.style = {% For the column graphs
+		enlarge x limits=false, xtick distance={#1}, const plot,%
+		every axis plot/.append style={no markers}},%
 	%
-	Full Column Left/.style 2 args        = {Column, Full Left={#1},           xtick distance={#2}},%
-	Full Column Right/.style              = {Full Column Left={#1}{1},         Right Axis},%
 	% Variants of the above that contain axis labels
-	Full Column Left Edge/.style 2 args   = {Full Column Left={#1}{#2},        ylabel={Average Time (ms)}},%
-	Full Column Left Bottom/.style 2 args = {Full Column Left={#1}{#2},        xlabel={Type Annotation Index}},%
-	Full Column Left Corner/.style 2 args = {Full Column Left Bottom={#1}{#2}, Full Column Left Edge={#1}{#2}},%
-	Full Column Right Edge/.style         = {Full Column Right={#1},           ylabel={Relative to Untyped}},%
+	Column Left Label/.style   = {ylabel={Average Time (ms)}},%
+	Column Bottom Label/.style = {xlabel={Type Annotation Index}},%
+	Column Right Label/.style  = {ylabel={Relative to Untyped}},%
+	%
+	Pattern/.style = { % For the page of graphs for each benchmark
+		enlarge x limits={abs=1.5pt}, ymax={#1}, height=3.2cm, width=4.4cm, %
+		every axis plot/.style={mark size=0.75pt, draw=GraphBase, fill=GraphBase!40}},%
+	%
+	Pattern A/.style = {draw=GraphA, fill=GraphA!40, mark=*}, %
+	Pattern B/.style = {draw=GraphB, fill=GraphB!40, mark=*}, %
+	Pattern AB/.style = {draw=GraphAB, fill=GraphAB!40, mark=*}, %
+	%Pattern Left/.style = {Left Axis={#1}, height=3.2cm, width=7.9cm}, % Size for pattern graphs
+	%Full Scatter Left/.style = {Scatter, Full Left={#1},
+	%	enlarge x limits={abs=2pt}, every axis plot/.append style={mark size={1pt}}},%
+	%Full Scatter Right/.style       = {Full Scatter Left={#1},        Right Axis},%
+	%sleft = "Pattern Scatter Left"
+	%cleft = "Pattern Column Left"
+	%sright = "Pattern Scatter Right"
+	%cright = "Pattern Column Right"
+	%Pattern Scatter A, Pattern Scatter B
 }
 
 \newcommand\DOUBLEAXIS[3]{%

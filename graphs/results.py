@@ -142,6 +142,8 @@ def variant(s):
 	vn = s.split("-")
 	return S(index = int(vn[0]), types = int(vn[1]))
 
+def floor_round(num, base):
+	return max(5, int(num//base)*base)
 
 # Have to use functions (and not lambdas) so they can be pickled
 def empty_result():
