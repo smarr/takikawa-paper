@@ -7,7 +7,7 @@ from math import sqrt
 import pickle
 
 # Some variables
-W = 200 # Number of warmup iterations to skip
+W = 350 # Number of warmup iterations to skip
 Z = norm.ppf((1+0.95)/2) # Z score, representing a 95% confidence interval
 
 PICKLE_FILE = "results.pickle"

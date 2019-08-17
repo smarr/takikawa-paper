@@ -301,6 +301,7 @@ rather than requiring classes or objects to explicitly declare their intended ty
 
 In Grace, types specify a set of method signatures that an object must provide. Thus a type expresses the requests an object can respond to, for example whether a particular accessor is available, rather than a location in a class hierarchy.
 
+\paragraph{Moth's Transient Type Checking}
 Moth's implementation of transient type checks however are only only first-order, as such it only dynamically checks that an object has methods of the same name and arity as are required by a type, however any argument and return types of such methods are not checked.
 
 In particular, Moth performs such type checks are run time:
@@ -358,21 +359,20 @@ This is why the type declared in lines 4-6 is checked only on line 7
 presence of a method called \code{three}, regardless of the method's
 declared return type.
 
-\paragraph{Moth: A Grace Implementation}
-Moth is a virtual machine for Grace that we are developing as a
+\paragraph{Moth's Optimisation}
+We are developing Moth as a
 research platform \cite{roberts-and-co-ecoop-2019}. Like other VMs
 based on the Truffle and Graal toolchain, Moth is a self-optimising
 AST interpreter \cite{Wurthinger:2012:SelfOptAST}. 
-The key idea is that an AST rewrites itself based on a program's run-time values
+The key idea is that an AST rewrites itself based on a program's run time values
 to reflect the minimal set of operations needed to execute the program
 correctly. The rewritten AST is then compiled into efficient machine
 code. This rewriting often depends on the dynamic types of the
 objects involved. In the simplest case, a ``self'' call (when one method
 on an object invokes a second method on the exact same object) will
-always result in executing the second method defined in same concrete
-class as the first method. The second method can then be inlined into
-the first method, avoiding the overheads of a machine-level subroutine
-invocation and of an object-oriented dynamic dispatch.
+always result in executing the exact same method. Thus the called method can be inlined into
+the callee, avoiding overhead of a machine-level subroutine
+invocation and an object-oriented dynamic dispatch.
 
 
 Moth relies on a number of standard techniques for optimising
@@ -383,10 +383,10 @@ field types, allowing a just-in-time compiler to
 represent objects in memory similarly to C structs and, consequently,
 can generate highly efficient code.
 ``Polymorphic inline caches''
-\citep{Hoelzle:91:PIC} uses object shapes to cache the results of
+\citep{Hoelzle:91:PIC} use object shapes to cache the results of
 method lookups, avoiding expensive class hierarchy searches or
 indirect jumps through virtual method tables. 
-For languages built on the Truffle framework,
+Since Moth is built on the Truffle framework,
 Graal comes with  additional support for partial evaluation,
 which enables efficient native code generation for
 Truffle interpreters \citep{Wurthinger:2017:PPE}.
@@ -396,17 +396,16 @@ Truffle interpreters \citep{Wurthinger:2017:PPE}.
 \label{s-eval}
 
 In our previous work \cite{roberts-and-co-ecoop-2019} we evaluated the
-performance of transient typechecks using the \AWFY
-benchmark suite \cite{Marr2016}, plus other
-benchmarks from the gradual-typing literature.
-The goal was to complement our benchmarks with additional ones that are
-used for similar experiments and can be ported to Grace.
+performance of transient type checks using 21 benchmarks.
+Including the 14 benchmarks of the \AWFY
+benchmark suite \cite{Marr2016}: Bounce, CD, DeltaBlue, GraphSearch, Havlak, Json, List, Mandelbrot, NBody, Permute, Richards, Sieve, Storage and Towers benchmarks. We also used benchmarks taken from the gradual-typing literature.
+Our goal was to complement our benchmarks with additional ones that are used for similar experiments and can be ported to Grace.
 To this end, we surveyed a number of papers
 \citep{Takikawa2016,Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Stulova2016,Greenman2018}
-and selected benchmarks that have been used by multiple papers.
-Some of these benchmarks overlapped with the \AWFY suite,
+and selected 9, benchmarks that have been used by multiple papers.
+Two of these benchmarks (NBody and Sieve) overlapped with the \AWFY suite,
 or were available in different versions.
-While not always behaviorally equivalent,
+While not always behaviourally equivalent,
 we chose the \AWFY versions since we already used them to
 establish the performance baseline.
 The selected benchmarks as well as the papers in which they were used are shown in
@@ -431,22 +430,19 @@ Table~\ref{tab:gradual-benchmarks}.
 \end{table}
 
 The benchmarks were modified to have complete type information.  To
-ensure correctness and completeness of these experiments, we added an
-additional check to Moth that reports absent type information to
-ensure each benchmark is completely typed.  To assess the performance
+ensure correctness and completeness of these experiments, we ensured that each benchmark is completely typed.  To assess the performance
 overhead of type checking, we compared the execution of Moth with all
 checks disabled against an execution that has all checks enabled.  The
-results of this evaluation demonstrated that Moth runs programs with
-transient typechecks enabled at an overhead of of 5\% (min.\ -13\%,
-max. 79\%) over peak performance without typechecks.
+results of this evaluation demonstrated that Moth's transient type checking has an overhead of 5\% (min.\ -13\%,
+max. 79\%) compared to Moth's peak performance with type checking disabled.
 
 We did not measure programs that mixed typed and untyped code because
-with our implementation technique a fully typed program is expected to
+with our implementation technique we expected fully typed programs to
 have the largest overhead. This is not the case for other kinds of
 gradual type checking, which have given rise to more complex
 evaluation techniques.  In particular, the so-called ``Takikawa'' or
 ``Takikawa-Greenman'' evaluation \cite{Takikawa2016,Greenman2019jfp}
-benchmarks a \emph{lattice} of $23^N$ \emph{configurations} of each
+benchmarks a \emph{lattice} of $2^N$ \emph{configurations} of each
 benchmark, where a configuration is a particular mix of static and
 dynamically typed code.
 
@@ -454,63 +450,29 @@ The Takikawa evaluation protocol was originally proposed for Typed
 Racket, where static vs dynamic typing is set per-module, so $N$ is
 the number of modules. Grace, following other languages such as
 Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017},
-allows programmers to choose typechecks at the level of individual
-declarations: $N$ is the number of type annotations in the program,
-so checking an entire lattice for a benchmark of any size
-is infeasible.  Vitousek et al.\ modified the Takikawa protocol for
+allows programmers to choose whether each individual declaration should be type-checked: so here $N$ is the number of type annotations in the program,
+so checking an entire lattice for even a moderately sized benchmark would be infeasible.  Vitousek et al.\ modified the Takikawa protocol for
 these kinds of languages by taking an approach based on sampling
 \cite{vitousek-transient-arXive-2019}.  The Takikawa-Vitousek protocol
 divides the number of type annotations in an fully-typed program into
 a maximum of 100 intervals, and then randomly generates ten programs within
 each interval by erasing type annotations.
 
-To investigate Moth's support for transient typechecks further, we
-carried out a (small?) Takikawa-Vitousek evaluation using (some of?)
-our existing benchmarks.
+To investigate Moth's support for transient type checks further, we carried out a similar approach to Takikawa-Vitousek evaluation: for each benchmark we generated 100 partially typed versions (or less if the benchmark was too small). We did an even split so that for each $i \ge 1$ and $i$ < $N$ (where $N$ is the total number of type annotation), we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to randomly choose the type annotations each configuration contained, and we ensured that no duplicate configurations where generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark, (or 97 in the case of Storage, since it only has 10 type annotations).
 
-\textbf{!!!KJX: Need to update this paragraph with what we did this time around!!!}
-To account for the complex warmup behavior
-of modern systems\citep{Barrett:2017:VMW} as well as
-the non-determinism caused by \eg garbage collection and cache effects,
-we run each benchmark for \textbf{$/$NumIterationsAll} iterations in the same
-VM invocation.\footnote{
-For the Higgs VM, we only use \textbf{$/$NumIterationsHiggs} iterations,
-because of its lower performance.
-This is sufficient since Higgs's compilation approach induces less variation
-and leads to more stable measurements.}
-Afterwards, we inspected the run-time plots over the iterations
-and manually determined a cutoff of \textbf{$/$WarmupCutOff} iterations for warmup,
-\ie, we discard iterations with signs of compilation.
-As a result, we use a large number of data points to compute the average,
-but outliers, caused by \eg garbage collection, remain visible in the plots.
-% In this work, we do not consider startup performance,
-% because we want to assess the impact of gradual type checks
-% on the best possible performance.
-All reported averages use the geometric mean since they aggregate
-ratios.
+As we did in our previous work \cite{roberts-and-co-ecoop-2019} which used the same set of benchmarks, to account for the complex warmup behaviour of modern systems\citep{Barrett:2017:VMW} as well as
+the non-determinism caused by \eg garbage collection and cache effects, we ran each benchmark for 1000 iterations in the same invocation of Moth, and used cut off of 350 iterations for warmup, \ie we discard the first 350 iterations, since they showed signs of compilation.
 
+Though though outliers, caused by \eg garbage collection, remain visible in the plots for each individual benchmark, the largest 95\% confidence interval we obtained for the arithmetic mean of any of the results for any of our experiments was $\pm3.53\%$ (for the PyStone benchmark). 
 
-\textbf{
-% Yuria
-%  - Ubuntu 16.04.4, Kernel 3.13
-%  - 24 hyperthreads
-%  - Intel Xeon E5-2620 v3 2.40GHz
-% Graal 0.33 Feb. 2018
-%
-% TODO: update these details when we have time... not a rejection criterion,
-% but needs to be correct in the final version
-All experiments were executed on a machine running Ubuntu Linux 16.04.4,
-with Kernel 3.13.
-The machine has two Intel Xeon E5-2620 v3 2.40GHz,
-with 6 cores each, for a total of 24 hyperthreads.
-We used ReBench 1.0 \citep{ReBench:2018}, Java 1.8.0\_171, Graal 0.33 (\code{a13b888}),
-Node.js 10.4, and Higgs from 9 May 2018 (\code{aa95240}).
+All experiments were executed on a Windows 10 machine
+running Fedora 29 within Windows Subsystems for Linux (version 1). The machine has 
+
+one Intel Core i7-6800K @3.40GHz, with 6 cores, for a total of 12 hyperthreads. We used ReBench 1.0 \citep{ReBench:2018}, Java 1.8.0\_191 Graal 0.43.
 Benchmarks were executed one by one to avoid interference between them.
-The analysis of the results was done with R 3.4.1,
-and plots are generated with ggplot 2.2.1 and tikzDevice 0.11.
-Our experimental setup is available online to enable reproductions.\footnote{
-\url{https://github.com/gracelang/moth-benchmarks}}
-}
+The analysis of the results and plots where generated using Python 3.7.3 and PGFPLOTS 1.16.
+To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, is available online.\footnote{
+\url{https://gitlab.ecs.vuw.ac.nz/isaac/Moth-Takikawa}}
 
 
 \section{Results}
@@ -568,7 +530,7 @@ more efficiently \citep{Papenhausen:2016:IVT,daSilva:2019:PSV}.
 Their focus is typically on parallelisation opportunities,
 guided by runtime feedback, cost models, or heuristics. 
 The large body of work\citep{Isaacs:2014:PerfViz} uses various approaches,
-though, we are not aware of work has used an approach as ours.
+though, we are not aware of work that has used an approach similar to ours.
 One may argue, this is largely a question of practicality.\sm{
 i put this in to hint at issues with usability.}
 
