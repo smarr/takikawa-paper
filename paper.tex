@@ -73,7 +73,7 @@
 \begin{document}
 \title{How Slow do my Transient Typechecks Go?}
 
-\author{Isaac Oscar Gariano}
+\author[Isaac O. G.]{Isaac Oscar Gariano}
 \affiliation{
   \department{Engineering and Computer Science} % \department is recommended
   \institution{Victoria University of Wellington}
@@ -81,7 +81,7 @@
 }
 \email{Isaac@ecs.vuw.ac.nz} % \email is recommended
 
-\author{Richard Roberts}
+\author[Richard R.]{Richard Roberts}
 \affiliation{
   \department{Computational Media Innovation Centre} % \department is recommended
   \institution{Victoria University of Wellington}
@@ -90,7 +90,7 @@
 \email{rykardo.r@gmail.com} % \email is recommended
 
 
-\author{Stefan Marr}
+\author[Stefan M.]{Stefan Marr}
 \orcid{0000-0001-9059-5180}
 \affiliation{
   \department{School of Computing} % \department is recommended
@@ -100,7 +100,7 @@
 \email{s.marr@kent.ac.uk} % \email is recommended
 
 
-\author{Michael Homer}
+\author[Michael H.]{Michael Homer}
 \affiliation{
   \department{Engineering and Computer Science} % \department is recommended
   \institution{Victoria University of Wellington}
@@ -110,7 +110,7 @@
 
 
 
-\author{James Noble}
+\author[James N.]{James Noble}
 \orcid{0000-0001-9036-5692}             %% \orcid is optional
 \affiliation{
   \department{Engineering and Computer Science} % \department is recommended
@@ -131,18 +131,11 @@ ensure it has the methods required by the annotation.
 Although na\"ive implementations of transient type checks have a high runtime overhead, just-in-time compilation and optimisation in virtual machines can eliminate much of this overhead.  Unfortunately
 the improvement is not uniform: while most type checks can be optimised
 away, some will significantly decrease a program's
-performance, and some may even increase it.  In this paper we show techniques where benchmark results can be used to help identify which type annotations have the greatest effects on performance.
-Using these techniques,
-programmers can optimise programs by removing expensive type checks,
-and VM engineers can identify new opportunities for compiler optimisation.   
+performance, and some may even increase it.  
 
-\sm{this is much to brief for me.
-Transient typechecks is a very specific thing.
-I believe, VM people need more context here.
-It's a form of gradual typing, which requires comparably simple checks
-at run time to check type violations.
-Then, how do we investigate the issues? we should give a hint what the solution is. otherwise, the sentence in using these techniques doesn't make sense to me, because we didn't say anything about them.}
-\kjx{still like brief abstracts. at least I defined ``techniques''}
+In this paper, we refine the so called ``Takikawa'' protocol, and use it to identify which type annotations have the greatest effects on performance. In particular, we show how graphing the performance of such benchmarks when varying which type annotations are present in the source code can be used to discern potential patterns in performance. We demonstrate our approach by testing the Moth virtual machine: for many of the benchmarks where Moth's transient type checking impacts performance, we have been able to identify one or two specific type annotations that are the likely cause. Without these type annotations, the performance impact of transient type checking becomes negligible.
+
+Using our technique programmers can optimise programs by removing expensive type checks, and VM engineers can identify new opportunities for compiler optimisation.
 \end{abstract}
 
 
@@ -172,14 +165,14 @@ Then, how do we investigate the issues? we should give a hint what the solution 
 \ccsdesc[300]{Software and its engineering~Interpreters}
 
 \keywords{dynamic type checking, gradual types, optional types, Grace,
-Moth, object-oriented programming}
+object-oriented programming}
 \maketitle
 
 
 \section{Introduction}
 
 
-Gradual Typing aims to add static type annotations to dynamic languages, increasing
+Gradual typing aims to add static type annotations to dynamic languages, increasing
 their safety while maintaining flexibility
 \citep{GiladPluggable2004,Siek2006,XXXSiek2015}
 --- or, complementarily,
@@ -400,12 +393,26 @@ Truffle interpreters \citep{Wurthinger:2017:PPE}.
 \RR{This last sentence seems out of place, does it belong here?}
 \kjx{yes I think it's fine}
 
-\section{Evaluating Transient Typechecks}
-\label{s-eval}
+\section{Experimental Methodology}
+Our methodology is built upon the so-called ``Takikawa'' or ``Takikawa-Greenman'' evaluation protocol \cite{Takikawa2016,Greenman2019jfp} benchmarks a \emph{lattice} of $2^N$ \emph{configurations} of each benchmark, where a configuration is a particular mix of static and dynamically typed code, however here we only test a relatively small sample of this lattice. Here we apply this methodology to our previous work \cite{roberts-and-co-ecoop-2019}, where we evaluated the performance of transient type checks in Moth by using a suite of benchmarks.
 
-In our previous work \cite{roberts-and-co-ecoop-2019} we evaluated the
-performance of transient type checks using 21 benchmarks.
-We started with the 14 benchmarks of the \AWFY
+\subsection{The Takikawa Protocol}
+The Takikawa evaluation protocol was originally proposed for Typed
+Racket, where static vs dynamic typing is set per-module, so $N$ is
+the number of modules. Grace, following other languages such as
+Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017},
+allows programmers to choose whether each individual declaration should be type-checked. This means $N$ in Grace is the number of type annotations in the program, and so
+checking an entire lattice for even a moderately sized benchmark would be infeasible.  Vitousek et al.\ modified the Takikawa protocol for
+these kinds of languages by taking an approach based on sampling
+\cite{vitousek-transient-arXive-2019}.  The Takikawa-Vitousek protocol
+divides the number of type annotations in a fully-typed program into
+a maximum of 100 intervals, and then randomly generates ten programs within
+each interval by erasing type annotations.
+
+To investigate Moth's support for transient type checks further, we carried out a similar approach to the Takikawa-Vitousek protocol. For each benchmark we generated 100 partially typed versions (fewer if the benchmark was too small). We did an even split so that for each interval $i \ge 1$ and $i$ < $N$, we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to choose the type annotations each configuration contained randomly, and we ensured that no duplicate configurations were generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark (or 97 in the case of our Storage benchmark, since it only has 10 type annotations).
+
+\subsection{The Benchmarks}
+In our previous work \cite{roberts-and-co-ecoop-2019} we evaluated the performance of transient type checks using 21 benchmarks. We started with the 14 benchmarks of the \AWFY
 benchmark suite \cite{Marr2016}: Bounce, CD, DeltaBlue, GraphSearch, Havlak, Json, List, Mandelbrot, NBody, Permute, Richards, Sieve, Storage and Towers benchmarks. We added another nine benchmarks taken from the gradual-typing literature.
 Our goal was to complement the \AWFY with additional ones that are used for similar experiments and can be ported to Grace.
 We surveyed a number of papers
@@ -446,28 +453,10 @@ max. 79\%) compared to Moth's peak performance with type checking disabled.
 
 We did not measure programs that mixed typed and untyped code because
 with our implementation technique we expected fully typed programs to
-have the largest overhead. This is not the case for other kinds of
-gradual type checking, which have given rise to more complex
-evaluation techniques.  In particular, the so-called ``Takikawa'' or
-``Takikawa-Greenman'' evaluation protocol \cite{Takikawa2016,Greenman2019jfp}
-benchmarks a \emph{lattice} of $2^N$ \emph{configurations} of each
-benchmark, where a configuration is a particular mix of static and
-dynamically typed code.
+have the largest overhead, which is not the case for other kinds of
+gradual type checking.
 
-The Takikawa evaluation protocol was originally proposed for Typed
-Racket, where static vs dynamic typing is set per-module, so $N$ is
-the number of modules. Grace, following other languages such as
-Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017},
-allows programmers to choose whether each individual declaration should be type-checked. This means $N$ in Grace is the number of type annotations in the program, and so
-checking an entire lattice for even a moderately sized benchmark would be infeasible.  Vitousek et al.\ modified the Takikawa protocol for
-these kinds of languages by taking an approach based on sampling
-\cite{vitousek-transient-arXive-2019}.  The Takikawa-Vitousek protocol
-divides the number of type annotations in a fully-typed program into
-a maximum of 100 intervals, and then randomly generates ten programs within
-each interval by erasing type annotations.
-
-To investigate Moth's support for transient type checks further, we carried out a similar approach to the Takikawa-Vitousek protocol. For each benchmark we generated 100 partially typed versions (fewer if the benchmark was too small). We did an even split so that for each interval $i \ge 1$ and $i$ < $N$, we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to choose the type annotations each configuration contained randomly, and we ensured that no duplicate configurations were generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark, (or 97 in the case of Storage, since it only has 10 type annotations).
-
+\subsection{Experimental Set Up}
 As in our previous work \cite{roberts-and-co-ecoop-2019} which used the same set of benchmarks, to account for the complex warmup behaviour of modern systems \citep{Barrett:2017:VMW} as well as
 the non-determinism caused by \eg garbage collection and cache effects, we ran each benchmark for 1000 iterations in the same invocation of Moth, and discard the first 350 iterations to ignore warmup JIT compilation.
 
@@ -518,28 +507,30 @@ Of particular note is that some of the graphs (Permute, Storage, Snake, Towers, 
 \label{s-individual}
 \begin{figure*}
 	\input{graphs/pattern}
-	\caption{Pairs of colour coded scatter and column graphs. The scatter graphs represent the performance of a sample of typing lattice. The column graphs show the performance of every configuration with only one type annotation. The scatter plots and columns graphs are colour coded based on whether a particular type annotation or two are present in the source code.}
+	\caption{Pairs of colour coded scatter and column graphs. The scatter graphs represent the performance of a sample of the typing lattices. The column graphs show the performance of every configuration with only one type annotation. The scatter plots and column graphs are colour coded based on whether a particular type annotation or two are present in the source code.}
 	\label{f:pattern}		
 \end{figure*}
 We hypothesise that the tri/bi-modal graphs, shown in figure~\ref{f:full}, are caused by individual type annotations: that is, certain annotations have a significant effect on performance. In order to identify such type annotations, for each benchmark and type annotation we manually inspected the scatter plots for the benchmark's typing lattice, coloured based on whether the chosen type annotation was present or not. This resulted in 1,775 graphs, however most of these showed no discernible pattern.
 
-As an alternative, and less labour-intensive approach to identifying potentially-influential type annotations, for each type annotation we ran each benchmark with \textit{only} that type annotation present. We used the same computer and number of iterations as for the typing lattice experiments, albeit these were done on different days.
+As an alternative, and less labour intensive approach to identifying potentially influential type annotations, for each type annotation we ran each benchmark with \textit{only} that type annotation present. We used the same computer and number of iterations as for the typing lattice experiments, albeit these were done on different days.
 
 Figure \ref{f:pattern} shows the results of these experiments, as well as the patterns we manually identified.
 
-The column graphs show the execution time of configurations with with only a single type annotation, the x-axis indicates the index of this annotation, thus the first column represents the 1\textsubscript{st} annotation, and the last column represents the last one (in the order they appear in the source code). The y-axes for the column graphs are the same as the associated scatter graph. However, though the right y-axes for the column graphs appear to be identical the scatter plot ones, they are relative to performance results collected on different days: this was to ensure that the performance of the test computer had not changed significantly from when the typing lattice experiments were run.
+The column graphs show the execution time of configurations with only a single type annotation, the x-axis indicates the index of this annotation, thus the first column represents the first annotation, and the last column represents the last one (in the order they appear in the source code). The y-axes for the column graphs are the same as the associated scatter graphs. However, though the right y-axes for the column graphs appear to be identical to the scatter plot ones, they are relative to performance results collected on different days: this was to ensure that the performance of the test computer had not changed significantly from when the typing lattice experiments were run.
 
-For each benchmark we highlighted one or two type annotations that appear to show a pattern for the typing lattice performance, or in the case of SpectralNorm and Json had higher than usual columns. The identified types are those represented by the red and blue columns. The scatter plots are colour coded accordingly: red/blue circle represents those with the given type annotation, but not both, purple circles represent configurations with both type annotations present, and grey circles represent those with neither.
+For each benchmark we highlighted one or two type annotations that appear to show a pattern for the typing lattice performance, or in the case of SpectralNorm and Json had higher than usual columns. The identified types are those represented by the red and blue columns. The scatter plots are colour coded accordingly: red/blue circles represent configurations with the red/blue type annotation, but not both, purple circles represent configurations with both type annotations present, and grey circles represent those with neither.
 
-As can be seen, most of the time the patterns we identified in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers and CD benchmark, there is clearly a pattern where an individual type annotation (highlighted in red) appears to be the cause of the slowest/upper half of the typing lattice graphs. For Permute there is actually a signficant performance \emph{increase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight increase in performance, but here this is caused by two type annotations (in red and blue); this does not appear to be cumulative, however, as the purple dots are around the same height as the red and blue ones: \textit{either} annotation is sufficient for the full improvement.
+As can be seen, most of the time the patterns we identified in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers, and CD benchmark, there is clearly a pattern where an individual type annotation (highlighted in red) appears to be the cause of the slowest/upper half of the typing lattice graphs. For Permute there is actually a signficant performance \emph{increase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight increase in performance, but here this is caused by two type annotations (in red and blue); this does not appear to be cumulative since the purple dots are around the same height as the red and blue ones: thus \textit{either} annotation is sufficient for the full improvement.
 
-List is interesting as it demonstrates that the red and blue type annotations both cause a significant decrease in performance, which is even greater when both are present. Richards is particularly odd as it shows a performance decrease that appears to occur when the red type annotation is present, but not the blue one.
+List is interesting as it demonstrates that the red and blue type annotations both cause a significant decrease in performance, which is even greater when both are present. Richards is particularly odd as it shows a performance decrease that appears to occur when the red type annotation is present, but not the blue one. We had previously identified this benchmark and the afformentioned type annotations \cite{roberts-and-co-ecoop-2019} as being the worst case for Moth.
 
 Finally, for SpectralNorm and Json, although we found outliers in the column graphs (types 27 and 83, highlighted in red), we were unable to find a pattern in the typing lattice.
 
 Note however that in the case of DeltaBlue and Richards, there are two noticeable spikes in the column graphs (at \#62 and \#24, respectively); nonetheless, we found no apparent relation between these and the typing lattice.
 
-The remaining benchmarks, which we have not shown in \ref{f:pattern}, have relatively flat column graphs and we could not identify any patterns in the typing lattice. The benchmark with the greatest difference in single-type configurations relative to the untyped configuration is Storage, with a configuration only $7.9\%$ faster than the untyped baseline. However, though Storage (as shown in \ref{f:full}) appears to be bimodal like Towers, we were unable to find any relationships between its typing lattice and any individual type annotations.
+In particular, observe that the grey dots for Snake, Towers, Permute, DeltaBlue, Go, and List are mostly flat horizontal lines, this indicates that by simply deleting the red and blue type annotations, the performance impact of transient type checking becomes negligible. However for CD and Richards, the transient type checking overhead of the grey dots appears linear, albeit still less than with the red and blue type annotations present. Thus we can observe that usually, only a couple of type annotations are responsible for the overhead caused by Moth's transient typed checking, whereas the rest are ``free''.
+
+The remaining benchmarks, which we have not shown in figure \ref{f:pattern}, have relatively flat column graphs and we could not identify any patterns in the typing latticse. The benchmark with the greatest difference in single-type configurations relative to the untyped configuration is Storage, with a configuration $7.9\%$ faster than the untyped baseline. However, though Storage (as shown in \ref{f:full}) appears to be bimodal like Towers, we were unable to find any relationships between its typing lattice and any individual type annotations.
 %For example for Snake, the dots covered in red (corresponding to configurations with type annotation number 61) are noticeably higher than the grey ones (those without type annotation 61), thus it appears that the 61\textsuperscript{st} type annotation causes a noticeable slowdown, which is also exemplified by the higher than average red column. The graphs for CD (type \#107), Towers (type \#7) show similar patterns. The graph for Permute is similar, but it shows that type annotation 8 actually makes the benchmarks \emph{faster}.
 %In some cases, more than two type annotations have an effect, for DeltaBlue and Go it appears that types 154/155, and 31/47 (respectively) all cause an increase in performance, but this is not cumulative.
 %However with List, the performance identified by type annotations 17 and 18 is actually comulative
@@ -561,12 +552,12 @@ in our case,
 we need to run full experiments to get the necessary information.
 Furthermore, we still lack the seamless integration in a development environment.
 
-The high-performance computing community also has been investigating how
+The high-performance computing community has been investigating how
 tools and visualization can help developers to utilize their systems
 more efficiently \citep{Papenhausen:2016:IVT,daSilva:2019:PSV}.
 Their focus is typically on parallelisation opportunities,
 guided by runtime feedback, cost models, or heuristics. 
-The large body of work \citep{Isaacs:2014:PerfViz} uses various approaches,
+Their large body of work \citep{Isaacs:2014:PerfViz} uses various approaches,
 though, we are not aware of work that has used an approach similar to ours.
 One may argue, this is largely a question of practicality.\sm{
 i put this in to hint at issues with usability.}
@@ -585,16 +576,15 @@ conducted under the Takikawa protocol
 seemed to have a characteristic bimodal performance profile: some
 of the benchmark configurations ran significantly slower than
 the remaining configurations. We also observed trimodal profiles, as well as performance increases when type annotations where added.
-By inspecting benchmark graphs colour coded for each individual type annotation in a program's source code, we were often able to
-identify that just one or two of the type checks were likely responsible for
-the bimodal performance, by observing patterns in the associated graph.
+By inspecting benchmark graphs colour coded for each individual type annotation in a program's source code, we were often able to notice patterns which suggested
+that just one or two of the type annotations were likely responsible for
+the bimodal performance.
 However, this approach requires inspecting one graph per type annotation.
 
-We also investigated another approach to help identify such annotation, for an individual benchmark, we can produce a single graph of the performances of individual configurations for each type annotation. 
-In most cases both approaches identified the same type annotations as likely causing a significant effect on performance.
+We also investigated another approach to help identify such annotations, for an individual benchmark, we can produce a single graph of the performances of individual configurations for each type annotation. 
+In most cases both approaches identified the same type annotations as likely causing a significant effect on performance. In particular these type annotations seemed to be responsible for most of the overhead caused by Moth's transient type checking.
 
-This is preliminary work, in particular we have not yet identified exactly why these type annotations appear to have an effect on performance. 
-
+This is preliminary work, in particular we have not yet identified exactly why these type annotations appear to have an effect on performance.
 There are also a number of threats to validity. 
 Regarding construct validity, 
 our underlying
@@ -612,7 +602,6 @@ to resemble other Graal
 VMs doing similar AST-based optimizations of transient type checks.
 Because we rely on common techniques, 
 we expect our results to be transferable to other JIT implementations as well.
-
 
 Finally, it is not clear how our results would transfer
 to other gradually typed-languages or other semantics for gradual typing.
