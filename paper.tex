@@ -490,7 +490,28 @@ The results for the performance of our sample of typing lattice configurations a
 
 Most of the graphs are essentially horizontal lines, indicating that the overhead of including type annotations is negligible. The plots for CD and Richards show a roughly linear increase, however, i.e.\ for these two benchmarks, adding type annotations reduces performance linearly. On the other hand, the plots for Go, Permute, DeltaBlue, and Storage show \emph{decreases}: i.e. adding more type annotations \emph{improves} performance of these benchmarks.
 
-Of particular note is that some of the graphs (Permute, Storage, Snake, Towers, and Richards) appear to show bimodal performance profiles, that is, two separate roughly horizontal lines. Presumably Moth can remove all the overhead from some configurations, but in others there must be one or more type checks that cannot be optimised away. List appears to have three performance modes: most of the configurations up to about 60\% annotations perform at roughly the same speed as untyped code; most configurations above 70\% perform 1.8 times more slowly than untyped code; and then across all annotation percentages there are configurations that perform roughly 1.5 times slower than the untyped baseline.
+By inspecting the scatterplots, we observe that the performance of
+Moth in almost any configuration of a benchmark is bounded by
+the performance in the untyped and fully-typed configuration.
+That is, for these benchmarks on transient type checks,
+measuring just the untyped and fully-typed configurations
+would provide excellent estimates of a benchmark's
+performance bounds.  This is different to the experience
+of other kinds of gradual typing, where the best, and most
+importantly worst, configurations are not always those
+fully typed or fully untyped \cite{greenam-takikiaw-JFP}.
+%
+However, the Richards and Snake benchmarks \textit{do} have
+sections outside these bounds, and isolated executions of
+a few others (SpectralNorm, JSON, DeltaBlue) are also outliers.
+%
+We believe that the 0\% and 100\% bounds are nonetheless a
+reasonable heuristic estimator in most cases, and will
+examine further the outlying benchmarks.
+
+
+Of particular note is that some of the graphs (Permute, Storage, Snake, Towers, and Richards) appear to show bimodal performance profiles, that is, two separate roughly-horizontal lines. Presumably Moth can remove all the overhead from some configurations, but in others there must be one or more type checks that cannot be optimised away. List appears to have three performance modes: most of the configurations up to about 60\% annotations perform at roughly the same speed as untyped code; most configurations above 70\% perform 1.8 times more slowly than untyped code; and then across all annotation percentages there are configurations that perform roughly 1.5 times slower than the untyped baseline.
+
 
 
 \section{Individual Annotations}
