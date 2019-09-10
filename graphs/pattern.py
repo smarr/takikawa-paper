@@ -2,11 +2,11 @@
 from results import *
 
 TODO = {
-	"Snake-70": 61, "Towers-30": 7,
-	"CD-250": 107, "Permute-14": 8,
+	"Snake-70": 61, "CD-250": 107, 
+        "Towers-30": 7, "Permute-14": 8,
 	"DeltaBlue-243": [154, 155], "Go-230": [31, 47],
-	"List-23": [17, 18], "Richards-177": [172, 173], #24,
-	"SpectralNorm-39": 27, "Json-134": 83}
+	"List-23": [17, 18], "Richards-177": [172, 173],
+        "Json-134": 112, "PyStone-85": 16}
 
 res = []
 i = 0

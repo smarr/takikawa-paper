@@ -1,11 +1,13 @@
-\documentclass[sigplan,10pt,review,screen]{acmart}\settopmatter{printfolios=true}
+\documentclass[sigplan,10pt,screen]{acmart}\settopmatter{printfolios=true}
 
-\acmConference[VMIL'19]{ACM SIGPLAN International Workshop on Virtual Machines and Intermediate Languages}{October 22, 2019}{Athens, Greece}
+\setcopyright{acmlicensed}
+\acmPrice{}
+\acmDOI{10.1145/3358504.3361232}
 \acmYear{2019}
-\acmISBN{978-x-xxxx-xxxx-x/YY/MM}
-\acmDOI{10.1145/nnnnnnn.nnnnnnn}
-\startPage{1}
-
+\copyrightyear{2019}
+\acmISBN{978-1-4503-6987-9/19/10}
+\acmConference[VMIL '19]{Proceedings of the 11th ACM SIGPLAN International Workshop on Virtual Machines and Intermediate Languages}{October 22, 2019}{Athens, Greece}
+\acmBooktitle{Proceedings of the 11th ACM SIGPLAN International Workshop on Virtual Machines and Intermediate Languages (VMIL '19), October 22, 2019, Athens, Greece}
 
 \def\AWFY{Are\,We\,Fast\,Yet\xspace}
 \newcommand{\code}[1]{\texttt{#1}}
@@ -22,6 +24,7 @@
 \collabAuthor{rr}{green!60!black}{Richard}
 \collabAuthor{sm}{red}{Stefan}
 \collabAuthor{kjx}{orange}{James}
+\collabAuthor{isaac}{blue}{Isaac}
 \collabAuthor{mwh}{purple}{Michael}
 
 
@@ -261,7 +264,7 @@ Specifically, the contributions of this work are:
 
 
 The next section discusses dynamic type checks and gradual typing in
-Moth (an implementation of the Grace language), then section~\ref{s-eval} describes our benchmarking protocol. Section~\ref{s-overall} then presents the overall results of
+Moth (an implementation of the Grace language), then section~\ref{s-meth} describes our benchmarking protocol. Section~\ref{s-overall} then presents the overall results of
 our benchmarks, while section~\ref{s-individual}
 looks at the results of benchmarking individual type checks.
 Section~\ref{s-rel} presents some additional related work, and finally \ref{s-concl} summarises our results, and briefly considers threats to validity.
@@ -413,6 +416,7 @@ Truffle interpreters \citep{Wurthinger:2017:PPE}.
 % \kjx{yes I think it's fine}
 
 \section{Experimental Methodology}
+\label{s-meth}
 
 Our goal is to identify which type annotations in Grace programs
 cause performance effects.
@@ -426,7 +430,8 @@ by type annotations.
 \subsection{The Takikawa Protocol}
 The Takikawa evaluation protocol was originally proposed for Typed
 Racket, where static vs dynamic typing is set per-module, so $N$ is
-the number of modules. Grace, following other languages such as
+the number of modules. The original Takikawa protocol also suggested a sampling strategy, where $10N$ configurations are randomly chosen from the lattice, however the lattice is a binomial distribution, meaning the majority of chosen benchmarks will have around $N/2$ type annotations
+Grace, following other languages such as
 Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017},
 allows programmers to choose whether each individual declaration should be type-checked. This means $N$ in Grace is the number of type annotations in the program, and so
 checking an entire lattice for even a moderately sized benchmark would be infeasible.  Vitousek et al.\ modified the Takikawa protocol for
@@ -435,6 +440,7 @@ these kinds of languages by taking an approach based on sampling
 divides the number of type annotations in a fully-typed program into
 a maximum of 100 intervals, and then randomly generates ten programs within
 each interval by erasing type annotations.
+However, this approach was designed for benchmarks with large numbers of type annotations, as well as for a larger sample size than our work.
 
  % Here we apply this methodology to our previous work \cite{roberts-and-co-ecoop-2019}, where we evaluated the performance of transient type checks in Moth by using a suite of benchmarks.
 
@@ -444,7 +450,7 @@ we adapted the Takikawa protocol
 and took inspiration from the Takikawa-Vitousek variant.
 For each benchmark, we generated 100 partially typed versions,
 or fewer if the benchmark has less than 11 types.
-We did an even split so that for each interval $i \ge 1$ and $i$ < $N$, we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to choose the type annotations each configuration contained randomly, and we ensured that no duplicate configurations were generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark (or 97 in the case of our Storage benchmark, since it only has 10 type annotations).
+We did an even split so that for each $i \ge 1$ and $i$ < $N$, we generated roughly the same number of configurations with $i$ type annotations. We used Robert Floyd's sampling algorithm \cite{Bentley:1987:PPS:30401.315746} to randomly choose the type annotations each configuration contained, and we ensured that no duplicate configurations were generated. In addition to these, we tested fully untyped and typed versions, for a total of 102 configurations per benchmark (or 97 in the case of our Storage benchmark, since it only has 10 type annotations).
 
 \subsection{The Benchmarks}
 
@@ -492,7 +498,7 @@ from the gradual-typing literature.
 
 Each benchmark has a complete set of type annotations,
 \ie, all possible type annotations are present,
-which is verified in the parser.
+which is verified in the parser. \isaac{This is misleading, in a few cases, some of the type annotations are in fact "Unknown", which is exactly what my "removing" of type annotations places}
 
 In our previous work, we \cite{roberts-and-co-ecoop-2019}
 we determined that the overhead of type checking on Moth is on average
@@ -511,12 +517,10 @@ checks disabled against an execution that has all checks enabled.
 As in our previous work \cite{roberts-and-co-ecoop-2019} which used the same set of benchmarks, to account for the complex warmup behaviour of modern systems \citep{Barrett:2017:VMW} as well as
 the non-determinism caused by \eg garbage collection and cache effects, we ran each benchmark for 1000 iterations in the same invocation of Moth, and discard the first 350 iterations to ignore warmup JIT compilation.
 
-Though outliers remain visible in the plots for each individual benchmark, the largest 95\% confidence interval we obtained (over the mean time after warmup) for any of experiments was $\pm3.36\%$ (for the PyStone benchmark).
+Though outliers remain visible in the plots for each individual benchmark, the largest 95\% confidence interval we obtained (over the mean time after warmup) for any of experiments was $\pm8.3\%$ (for the PyStone benchmark).
 
-All experiments were executed on a Windows 10 machine
-running Fedora 30 within Windows Subsystems for Linux (version 1). The machine has an Intel Core i7-6800K @3.40GHz, with 6 cores, for a total of 12 hyperthreads. This computer appears to produce comparable results to the one used in our previous work, although the absolute performance is higher, the relative overhead of transient type-checks is similar.
-
-We used the same version of Moth as previously, together with ReBench 1.0 \citep{ReBench:2018}, Java 1.8.0\_191 Graal 0.43. Benchmarks were executed one by one to avoid interference between them. The analysis of the results and plots where generated using Python 3.7.3 and PGFPLOTS 1.16. To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, are available online.\footnote{\url{https://gitlab.ecs.vuw.ac.nz/isaac/Moth-Takikawa}}
+We used the same machine, version of Moth and Graal as previously, specifically all experiments were executed on a machine running Ubuntu Linux 16.04.4, with Kernel 3.13. The machine has two Intel Xeon E5-2620 v3 2.40GHz, with 6 cores each, for a total of 24 hyperthreads.
+We also used ReBench 1.0 \citep{ReBench:2018}, Java 1.8.0\_191 Graal 0.43. Benchmarks were executed one by one to avoid interference between them. The analysis of the results and plots where generated using Python 3.7.3 and PGFPLOTS 1.16. To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, are available online.\footnote{\url{https://gitlab.ecs.vuw.ac.nz/isaac/Moth-Takikawa}}
 
 \section{Performance of Benchmark Configurations}
 \label{s-overall}
@@ -533,7 +537,7 @@ These results are the foundation for a more detailed analysis.
 
 Following \cite{vitousek-transient-arXive-2019}, the points on each graph in figure~\ref{f:full} show the average execution of each individual configuration. The x-axis represents the proportion of type annotations for each configuration, with the left- and right-most points showing the times for the fully untyped and typed configurations respectively. The execution time in milliseconds is shown on the left y-axes, and time relative to the fully untyped configuration is shown on the right y-axes.
 
-Most of the graphs are essentially horizontal lines, indicating that the overhead of including type annotations is negligible. The plots for CD and Richards show a roughly linear increase, however, i.e.\ for these two benchmarks, adding type annotations reduces performance linearly. On the other hand, the plots for Go, Permute, DeltaBlue, and Storage show \emph{decreases}: i.e. adding more type annotations \emph{improves} performance of these benchmarks.
+Most of the graphs are essentially horizontal lines, indicating that the overhead of including type annotations is negligible. The plots for CD and Richards show a roughly linear increase, i.e.\ for these two benchmarks, adding type annotations reduces performance linearly. On the other hand, the plots for Go, Permute, DeltaBlue, and Storage show \emph{decreases}: i.e. adding more type annotations \emph{improves} performance of these benchmarks.
 
 By inspecting the scatterplots, we observe that the performance of
 Moth in almost any configuration of a benchmark is bounded by
@@ -546,16 +550,16 @@ of other kinds of gradual typing, where the best, and most
 importantly worst, configurations are not always those
 fully typed or fully untyped \cite{Greenman2019jfp}.
 %
-However, the Richards and Snake benchmarks \textit{do} have
+However, the Richards benchmark \textit{does} have
 sections outside these bounds, and isolated executions of
-a few others (SpectralNorm, JSON, DeltaBlue) are also outliers.
+a couple of others (Fannkuch and DeltaBlue) are also outliers.
 %
 We believe that the 0\% and 100\% bounds are nonetheless a
-reasonable heuristic estimator in most cases, and will
+reasonable heuristic estimator in most cases, and we will
 examine further the outlying benchmarks.
 
 
-Of particular note is that some of the graphs (Permute, Storage, Snake, Towers, and Richards) appear to show bimodal performance profiles, that is, two separate roughly-horizontal lines. Presumably Moth can remove all the overhead from some configurations, but in others there must be one or more type checks that cannot be optimised away. List appears to have three performance modes: most of the configurations up to about 60\% annotations perform at roughly the same speed as untyped code; most configurations above 70\% perform 1.8 times more slowly than untyped code; and then across all annotation percentages there are configurations that perform roughly 1.5 times slower than the untyped baseline.
+Of particular note is that some of the graphs (Permute, Storage, Towers, and Richards) appear to show bimodal performance profiles, that is, two separate roughly-horizontal lines. Presumably Moth can remove all the overhead from some configurations, but in others there must be one or more type checks that cannot be optimised away. List appears to have three performance modes: the graph consists of three mostly flat lines, at about 1 times slower, 1.5 times slower, and 1.8 times slower than untyped code.
 
 
 
@@ -600,12 +604,12 @@ As can be seen, most of the time the patterns we found in the typing lattice gra
 
 List is interesting as it demonstrates that the red and blue type annotations both cause a significant decrease in performance, which is even greater when both are present. Richards is particularly odd as it shows a performance decrease that appears to occur when the red type annotation is present, but not the blue one. We had previously identified this benchmark and the aforementioned type annotations \cite{roberts-and-co-ecoop-2019} as being the worst case for Moth.
 
-For SpectralNorm and Json, although we found outliers in the column graphs (types 27 and 83, highlighted in red), we were unable to find a matching pattern in the configuration performance.
-Finally, for DeltaBlue and Richards, there are two noticeable spikes in the column graphs (at \#62 and \#24, respectively), however we again found no apparent relation between these outliers and the overall performance
+For Json and PyStone, although we found outliers in the column graphs (such as types \#112 and \#16, highlighted in red), we were unable to find a matching pattern in the configuration performance.
+Finally, for DeltaBlue there is a noticeable spike in the column graphs (at \#198), however we again found no apparent relation between this outlier and the overall performance.
 
-In particular, observe that the grey dots for Snake, Towers, Permute, DeltaBlue, Go, and List are mostly flat horizontal lines, this indicates that by simply deleting the red and blue type annotations, the performance impact of transient type checking becomes negligible. However for CD and Richards, the transient type checking overhead of the grey dots appears linear, albeit still less than with the red and blue type annotations present. Thus we can observe that usually, only a couple of type annotations are responsible for the overhead caused by Moth's transient typed checking, whereas the rest are ``free''.
+In particular, observe that the grey dots for Snake, Towers, DeltaBlue, Go, and List are mostly flat horizontal lines, this indicates that by simply deleting the red and blue type annotations, the performance impact of transient type checking becomes negligible. However for CD and Richards, the transient type checking overhead of the grey dots appears linear, albeit still less than with the red and blue type annotations present. Thus we can observe that usually, only a couple of type annotations are responsible for the overhead caused by Moth's transient typed checking, whereas the rest are ``free''.
 
-The remaining benchmarks, which we have not shown in figure \ref{f:pattern}, have relatively flat column graphs and we could not identify any patterns in the typing latticse. The benchmark with the greatest difference in single-type configurations relative to the untyped configuration is Storage, with a configuration $7.9\%$ faster than the untyped baseline. However, though Storage (as shown in \ref{f:full}) appears to be bimodal like Towers, we were unable to find any relationships between its typing lattice and any individual type annotations.
+The remaining benchmarks, which we have not shown in figure \ref{f:pattern}, have even flatter column graphs than PyStone, and we could not identify any patterns in the typing lattices. Of those we did not show, the greatest difference in single-type configurations relative to the untyped configuration was $5.07\%$ (for the Float benchmark).
 %For example for Snake, the dots covered in red (corresponding to configurations with type annotation number 61) are noticeably higher than the grey ones (those without type annotation 61), thus it appears that the 61\textsuperscript{st} type annotation causes a noticeable slowdown, which is also exemplified by the higher than average red column. The graphs for CD (type \#107), Towers (type \#7) show similar patterns. The graph for Permute is similar, but it shows that type annotation 8 actually makes the benchmarks \emph{faster}.
 %In some cases, more than two type annotations have an effect, for DeltaBlue and Go it appears that types 154/155, and 31/47 (respectively) all cause an increase in performance, but this is not cumulative.
 %However with List, the performance identified by type annotations 17 and 18 is actually comulative
