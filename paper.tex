@@ -482,7 +482,7 @@ reasonable heuristic estimator in most cases, and we will
 examine further the outlying benchmarks.
 
 
-Of particular note is that some of the graphs (Permute, Storage, Towers, and Richards) show bimodal performance profiles, that is, two separate roughly-horizontal lines. Presumably Moth can remove all the overhead from some configurations, but in others there must be one or more type checks that cannot be optimised away. List shows three performance modes: the graph consists of three mostly flat lines, at about 1 times slower, 1.5 times slower, and 1.8 times slower than untyped code.
+Of particular note is that some of the graphs (Permute, Storage, Towers, and Richards) show bimodal performance profiles, that is, two separate roughly-horizontal lines. Presumably Moth can remove all the overhead from some configurations, but in others there must be one or more type checks that could not be optimised away. List shows three performance modes: the graph consists of three mostly flat lines, at about 1 times slower, 1.5 times slower, and 1.8 times slower than untyped code.
 
 
 
@@ -568,8 +568,8 @@ we need to run full experiments to get the necessary information.
 
 In this paper we have investigated how benchmarks can be
 repurposed to determine precisely which transient type checks are
-likely resistant to the optimisations provided by a just-in-time compiling
-virtual machine.
+likely to cause performance effects,
+and for instance are currently not optimised by the just-in-time compiler.
 However, detailed analysis will be needed in order to identify exactly what causes such performance effects, such as that we previously did for the List benchmark \cite{roberts-and-co-ecoop-2019}.
 We observed that many of our benchmark results
 conducted under the Takikawa protocol 
