@@ -345,11 +345,13 @@ by type annotations.
 \subsection{The Takikawa Protocol}
 The Takikawa evaluation protocol was originally proposed for Typed
 Racket, where static vs dynamic typing is set per-module, so $N$ is
-the number of modules. The original Takikawa protocol also suggested a sampling strategy, where $10N$ configurations are randomly chosen from the lattice, however the lattice is a binomial distribution, meaning the majority of chosen benchmarks will have around $N/2$ type annotations
-Grace, following other languages such as
-Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017},
-allows programmers to choose whether each individual declaration should be type-checked. This means $N$ in Grace is the number of type annotations in the program, and so
-checking an entire lattice for even a moderately sized benchmark would be infeasible.  Vitousek et al.\ modified the Takikawa protocol for
+the number of modules. The original Takikawa protocol also suggested a sampling strategy, where $10N$ configurations are randomly chosen from the lattice, however the lattice is a binomial distribution, meaning the majority of chosen benchmarks will have around $N/2$ type annotations.
+
+Grace allows programmers to choose for each individual declaration whether it should be type-checked, and thus follows languages such as
+Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017}.
+This means in Grace $N$ is the number of type annotations in the program.
+This makes it infeasible to checking an entire lattice, even for a moderately sized benchmark.
+Vitousek et al.\ therefore modified the Takikawa protocol for
 these kinds of languages by taking an approach based on sampling
 \cite{vitousek-transient-arXive-2019}.  The Takikawa-Vitousek protocol
 divides the number of type annotations in a fully-typed program into
@@ -359,9 +361,9 @@ However, this approach was designed for benchmarks with large numbers of type an
 
  % Here we apply this methodology to our previous work \cite{roberts-and-co-ecoop-2019}, where we evaluated the performance of transient type checks in Moth by using a suite of benchmarks.
 
-Unlike such prior work, we wish to identify which type annotations cause anomalies,
+Unlike prior work, we wish to identify which type annotations cause anomalies,
 % To investigate Moth's support for transient type checks further, 
-thus we adapted the Takikawa protocol
+and thus we adapted the Takikawa protocol
 and took inspiration from the Takikawa-Vitousek variant.
 For each benchmark, we generated 100 partially typed versions,
 or fewer if the benchmark has less than 11 types.
