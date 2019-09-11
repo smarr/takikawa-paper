@@ -431,7 +431,7 @@ checks disabled against an execution that has all checks enabled.
 % gradual type checking.
 
 \subsection{Experimental Set Up}
-As in our previous work \cite{roberts-and-co-ecoop-2019} which used the same set of benchmarks, to account for the complex warmup behaviour of modern systems \citep{Barrett:2017:VMW} as well as
+To account for the complex warmup behaviour of modern systems \citep{Barrett:2017:VMW} as well as
 the non-determinism caused by \eg garbage collection and cache effects, we ran each benchmark for 1000 iterations in the same invocation of Moth, and discard the first 350 iterations to ignore warmup JIT compilation.
 
 Though outliers remain visible in the plots for each individual benchmark, the largest 95\% confidence interval we obtained (over the mean time after warmup) for any of experiments was $\pm8.3\%$ (for the PyStone benchmark).
@@ -439,8 +439,10 @@ Though outliers remain visible in the plots for each individual benchmark, the l
 All our experiments used the same machine, Graal, and Moth as previously; the machine has two Intel Xeon E5-2620 v3 2.40GHz, with 6 cores each, for a total of 24 hyperthreads.
 The machine was running Ubuntu Linux 16.04.6, with Kernel 4.4, and we used ReBench 1.0 \citep{ReBench:2018} and Java 1.8.0\_191 Graal 0.43. Benchmarks were executed one by one to avoid interference between them. The analysis of the results and plots where generated using Python 3.7.3 and PGFPLOTS 1.16. To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, are available online.\footnote{\url{https://gitlab.ecs.vuw.ac.nz/isaac/Moth-Takikawa}}
 
-In our previous work we also compared the performance of untyped code on Moth against state-of-the-art VMs: Java, Node.js using the V8 JavaScript VM, and the Higgs JavaScript VM. Java was the fastest of these, and on average V8 was about 1.8x slower than Java, Moth was 2.3x slower, and Higgs was 10.4x slower.
-Hence we continue to argue that ``Moth is a suitable platform to assess the impact of our approach to gradual type checking, because its performance is close enough to state-of-the-art VMs, and run-time overhead is not hidden by slow baseline performance.''
+In previous work \cite{roberts-and-co-ecoop-2019}, we also compared the performance of untyped code on Moth against state-of-the-art VMs: Java, Node.js using the V8 JavaScript VM, and the Higgs JavaScript VM. Java was the fastest of these, and on average V8 was about 1.8x slower than Java, Moth was 2.3x slower, and Higgs was 10.4x slower.
+We believe, this makes Moth suitable for assessing the impact of type checking,
+because Moth's performance is close enough to state-of-the-art VMs,
+which avoids hiding of type check overheads in a slow baseline.
 
 \section{Performance of Benchmark Configurations}
 \label{s-overall}
