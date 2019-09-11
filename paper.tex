@@ -131,7 +131,7 @@ One form of type checking used in gradually typed language is
 code with a type annotation, the object is dynamically checked to
 ensure it has the methods required by the annotation.
 
-Although na\"ive implementations of transient type checks have a high runtime overhead, just-in-time compilation and optimisation in virtual machines can eliminate much of this overhead.  Unfortunately
+Although na\"ive implementations of transient type checks have a high run-time overhead, just-in-time compilation and optimisation in virtual machines can eliminate much of this overhead.  Unfortunately
 the improvement is not uniform: while most type checks can be optimised
 away, some will significantly decrease a program's
 performance, and some may even increase it.  
@@ -159,7 +159,7 @@ There is a vast spectrum of different approaches to gradual typing \cite{kafka18
 
 Unfortunately most gradual systems with run-time semantics (as opposed to type erasure as in TypeScript) typically impose significant run-time performance overheads. This has lead to a significant body of research to develop techniques to optimise gradual typing \citep{Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Greenman2018}.
 
-This has also lead to a technique to evaluate the performance of gradual typing, such as the so called so-called ``Takikawa'' protocol \cite{Takikawa2016,Greenman2019jfp,vitousek-transient-arXive-2019}. The Takikawa protocol was created to measure the runtime cost of gradual typing by testing various configurations of typed/untyped code. This approach was designed to investigate the the performance effect of the amount of typed vs untyped code, in particular it shows that how simply adding more type annotations does not always produce a uniform effect on performance. Here we adapt their approach in order to identify individual type annotations that may be responsible for performance effects.
+This has also lead to a technique to evaluate the performance of gradual typing, such as the so called so-called ``Takikawa'' protocol \cite{Takikawa2016,Greenman2019jfp,vitousek-transient-arXive-2019}. The Takikawa protocol was created to measure the run-time cost of gradual typing by testing various configurations of typed/untyped code. This approach was designed to investigate the the performance effect of the amount of typed vs untyped code, in particular it shows that how simply adding more type annotations does not always produce a uniform effect on performance. Here we adapt their approach in order to identify individual type annotations that may be responsible for performance effects.
 
 This paper builds upon our recent work on optimising transient type checks \cite{Roberts2017,roberts-and-co-ecoop-2019} to make the following contributions:
 \begin{itemize}
@@ -541,11 +541,11 @@ The high-performance computing community has been investigating how
 tools and visualisations can help developers to utilise their systems
 more efficiently \citep{Papenhausen:2016:IVT,daSilva:2019:PSV}.
 Their focus is typically on parallelisation opportunities,
-guided by runtime feedback, cost models, or heuristics. 
+guided by run-time feedback, cost models, or heuristics. 
 Their large body of work \citep{Isaacs:2014:PerfViz} uses various approaches,
 though, we are not aware of work that has used an approach similar to ours.
 
-At the moment, our approach to identifing type annotations that case
+At the moment, our approach to identifying type annotations that case
 performance anomalies is not integrated into a development environment.
 Though, for instance Optimization Coaching
 \citep{St-Amour:2012:OCO} is a promising direction.
@@ -608,7 +608,7 @@ effort than would be required for larger and more complex languages.
 In the future, we hope to investigate statistical techniques to
 determine the significance of each type annotation's contribution to a
 programs overall performance. We would also like to investigate 
-whether this approach can assist with optimsations for programmers' day-to-day  development, or help VM engineers identifying performance bugs in the underlying virtual machines.
+whether this approach can assist with optimisations for programmers' day-to-day  development, or help VM engineers identifying performance bugs in the underlying virtual machines.
 
 \begin{acks}
 The authors would like to thank the anonymous reviewers for their
