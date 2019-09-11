@@ -1,0 +1,132 @@
+We are pleased to inform you that your paper Which of my Transient Type
+Checks are not (Almost) Free? was accepted for publication at VMIL2019!
+
+We have received an interesting and diverse set of submissions. Based on
+the accepted papers, we are now preparing the program for the workshop.
+
+The camera-ready submission deadline for VMIL2019 is September 11th. You
+will receive a separate email with the author toolkit. Please remember that
+the maximum number of allowed pages for VMIL is 10 pages. When preparing
+your camera-ready version, it would be a good idea to double-check that the
+paper title is correct, and that all author names are accurate.
+
+In case you have not registered yet, please do register via the SPLASH
+website: https://2019.splashcon.org/ (the early registration deadline is
+September 20).
+
+We are looking forward to an exciting and productive workshop!
+
+Best regards,
+David and Daniele,
+VMIL2019 PC Co-chair
+
+Review #8A
+===========================================================================
+
+Overall merit
+-------------
+4. Accept
+
+Reviewer expertise
+------------------
+4. Expert
+
+Paper summary
+-------------
+This paper looks at the cost of type checks in a gradually typed Grace.
+
+Comments for author
+-------------------
+This is fine work and it should be presented at VMIL.
+
+Quibbles:
+
+ -- the sampling approach you mention was also described in the Takikawa et al. JFP journal version (not sure which is first, we started working on it right away, but JFP took ages to appear). It does not matter much anyway.
+
+ -- This work has no external baseline. All the comparisons are for the same implementation of Grace.  So you don't know about opportunity costs of transients, i.e. what you could do in a fully typed implementation of Grace that employs all possible optimizations.   Let me give you an absurd example: imagine that you hack your compiler so that, after each method call, it adds a loop that counts to a million.  Then, if you measure the cost of transient checks they will appear to be for free, as they will be drowned by the other overheads.
+Purely internal benchmark give you upper bounds on costs, they can identify the presence of performance pathologies not their absence.
+To mitigate this effect you should try to compare the performance of the Grace benchmarks to, say, an implementation of the same in JS on V8. (Or to their Java version)   Then you can say the overhead of transient is between 5% and whatever slowdown you have measure between you and the external baseline.
+
+-- The overheads clearly depend on the structure of the benchmarks. Some are very numerical and dominated by tight-loops and other are more interesting.  CD for example uses the equivalent of structs to hold a bunch of floating point numbers. Its costs are dominated by floating point arithmetic and the occasional manipulation of those structs. There is no deep type hierarchies involved there. My point is that you should peek under the hood of the benchmarks, it will give you ideas about what is going on.
+
+If accepted for presentation:
+
+  -- I don't think that the graphs are super interesting to look in a talk. What would perhaps be more interesting is to pick one program and study it in detail.  Give example of the annotations, the generated code, and discuss performance of that program under different configurations
+
+  -- it would be neat to have an external baseline for that program
+
+ Thanks for the nice work.
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+Review #8B
+===========================================================================
+
+Overall merit
+-------------
+2. Weak reject
+
+Reviewer expertise
+------------------
+2. Some familiarity
+
+Paper summary
+-------------
+This paper explores transient type checking in the context of the Moth virtual machine (VM), an in-house VM for the Grace programming language. The paper uses the recently proposed Takikawa protocol to show that when evaluating differently-typed variants of a benchmark, only some typed configurations result in high performance overhead.
+
+Comments for author
+-------------------
+The contribution of this paper is not novel. Specifically, the main conclusion is similar to Takikawa et al. The authors claim to refine the Takikawa protocol. But this is not clear after reading the paper. If the refinement is the main contribution, then it should be signaled out more clearly. The claim that certain typed configurations are resistant to JIT optimization is not backed up at all in the evaluation section. How does a type annotation preclude a JIT optimization? Give an example. As an aside, this point is not even listed as the main contribution of the paper on page 2 and line 122. 
+
+I would like this paper be written with a clearly identified thread of reasoning. Right now, it seems to hover around 2-3 claims/contributions with none discussed in depth in the introduction and sections before the evaluation.
+
+Takikawa et al. demonstrate that certain typed configurations result in high performance overheads on a more ubiquitous derivation of the Racket programming language. What is novel about reaching the same conclusion using an in-house language and VM implementation?
+Furthermore, the conclusions of this paper are not generalizable. 
+
+Some questions for the authors:
+
+Which annotations are not (almost) free? Give concrete examples. Showing the annotations in the benchmark code maybe useful. After all, this is the main contribution of the paper.
+
+In Figure 1, why is the execution time relative to 0% typed better for some typed configurations?
+
+The text in the paper is confusing at times and has many typos. Some portions of the paper are replicated from a preliminary draft of [35]. Please rewrite the introductory sentences for the sake of originality.
+
+Writing suggestions: (1) couple of times in the paper you say appears to. This reduces reader's confidence in the data and/or observation. An example is page 4 and line 339/394. (2) on page 2 and line 122, to identifying should be to identify or for identifying. A couple of lines later, there is ??. Please proof-read. (3) Section 3.1 and line 277 needs a reference to the Takikawa protocol paper.
+
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+Review #8C
+===========================================================================
+
+Overall merit
+-------------
+4. Accept
+
+Reviewer expertise
+------------------
+3. Knowledgeable
+
+Paper summary
+-------------
+The authors present a performance evaluation study on the Grace/Moth gradual typesystem. In particular, the authors study how fine-grained type annotations affect the performance of a Grace application.
+
+Comments for author
+-------------------
+Pros:
+ - Interesting insight into the performance bottlenecks of transient type checking
+ - Evaluation is well-structured. Figures make it easy to understand the experiments.
+
+Cons:
+ - Suite of benchmarks for evaluation consists of relatively small number of short programs.
+
+I enjoyed reading the paper. As I read, I was excited to see the results of the experiments based on the authors introduction and background sections.
+
+The authors note that the corpus used for evaluation is small as a result of using the Grace/VM infrastructure. As a result, I am uncertain how much of the conclusions drawn from the experiments will hold in the context of larger programs. For example, Towers and Permute contain 30 and 14 type annotation respectively; it is not surprising that a single annotation causes a shift in these cases. Regardless, I like the direction of this study, it simply needs a larger corpus.
+
+It would be useful to show the line of code and single annotation that causes the performance loss / improvement. Have the authors looked into this? While the study itself is interesting, I expected a bit of qualitative analysis to support the authors' conclusions. What is it about a single annotation that has such a large effect on performance?
+
+Overall, I feel this is good work and look forward to its continued development.
