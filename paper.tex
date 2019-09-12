@@ -155,12 +155,17 @@ performance evaluation, benchmarking, object-oriented programming}
 \section{Introduction}
 Gradual typing aims to add static type annotations to dynamic languages, increasing their safety while maintaining flexibility \citep{GiladPluggable2004,Siek2006,XXXSiek2015}, and/or, permitting dynamic type annotations within static languages, increasing flexibility whilst maintaining some safety \citep{AbadiTOPLAS1991}.
 
-There is a vast spectrum of different approaches to gradual typing \cite{kafka18,bensurvey18icfp}. Here we measure the performance of ``transient'' or ``type-tag'' checks (as in Reticulated Python), which offer first-order semantics: they check that an object's type constructor or names of supported methods match any static types that the object flows through, but not the return/argument types of such methods \cite{Siek2007,Bloom2009,concrete15,reticPython2014,Greenman2018}.
+There is a vast spectrum of different approaches to gradual typing
+\cite{kafka18,bensurvey18icfp}. Here we measure the performance of
+``transient'' or ``type-tag'' checks (as in Reticulated Python), which
+offer first-order semantics: they check that an object's type
+constructor or names of supported methods match any static types that
+the object flows through, but not the return types or argument types of those methods \cite{Siek2007,Bloom2009,concrete15,reticPython2014,Greenman2018}.
 
 Unfortunately most gradual systems with run-time semantics, as opposed to type erasure as in TypeScript, impose significant run-time performance overheads. This has lead to a significant body of research to develop techniques to optimise gradual typing \citep{Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Greenman2018}.
 
-This has also lead to a technique to evaluate the performance of gradual typing, such as the so called so-called ``Takikawa'' protocol \cite{Takikawa2016,Greenman2019jfp,vitousek-transient-arXive-2019}. The Takikawa protocol was created to measure the run-time cost of gradual typing by testing various configurations of typed/untyped code. This approach was designed to characterise how the amount of typed and untyped code influences performance.
-In particular it shows that how simply adding more type annotations does not always produce a uniform effect on performance. Here we adapt their approach in order to identify individual type annotations that may be responsible for performance effects.
+This has also lead to a technique to evaluate the performance of gradual typing, the ``Takikawa'' protocol \cite{Takikawa2016,Greenman2019jfp,vitousek-transient-arXive-2019}. The Takikawa protocol was created to measure the run-time cost of gradual typing by testing various configurations of typed and untyped code. This approach was designed to characterise how the amount of typed and untyped code influences performance.
+In particular, Takikawa protocol evaluations often show that how simply adding more type annotations does not always produce a uniform effect on performance. Here we adapt their approach in order to identify individual type annotations that may be responsible for performance effects.
 
 This paper builds upon our recent work on optimising transient type checks \cite{Roberts2017,roberts-and-co-ecoop-2019} to make the following contributions:
 \begin{itemize}
@@ -347,10 +352,10 @@ The Takikawa evaluation protocol was originally proposed for Typed
 Racket, where static vs dynamic typing is set per-module, so $N$ is
 the number of modules. The original Takikawa protocol also suggested a sampling strategy, where $10N$ configurations are randomly chosen from the lattice, however the lattice is a binomial distribution, meaning the majority of chosen benchmarks will have around $N/2$ type annotations.
 
-Grace allows programmers to choose for each individual declaration whether it should be type-checked, and thus follows languages such as
+Grace allows programmers to choose whether each individual declaration should be type-checked, and thus follows languages such as
 Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017}.
-This means in Grace $N$ is the number of type annotations in the program.
-This makes it infeasible to checking an entire lattice, even for a moderately sized benchmark.
+This means in Grace $N$ is the number of type annotations in the program, so it is
+infeasible to check an entire lattice, even for a moderately sized benchmark.
 Vitousek et al.\ therefore modified the Takikawa protocol for
 these kinds of languages by taking an approach based on sampling
 \cite{vitousek-transient-arXive-2019}.  The Takikawa-Vitousek protocol
@@ -414,9 +419,12 @@ from the gradual-typing literature.
 %   \end{center}
 % \end{table}
 
-Each benchmark has an almost complete set of type annotations,
-\ie, static type annotations are present at almost all possible points.
+%Each benchmark has an almost complete set of type annotations,
+%\ie, static type annotations are present at almost all possible points.
 %ISAAC: I changed this as it was misleading, in a few cases, some of the type annotations are in fact "Unknown", which is exactly what my "removing" of type annotations places
+
+We added type annotations to every benchmark, aiming to use the most appropriate (most specific) annotation for each declaration.
+%KJX: I changed it too because I though that was also misleading.
 
 In our previous work, we \cite{roberts-and-co-ecoop-2019}
 we determined that the overhead of type checking on Moth is on average
@@ -441,9 +449,9 @@ All our experiments used the same machine, Graal, and Moth as previously; the ma
 The machine was running Ubuntu Linux 16.04.6, with Kernel 4.4, and we used ReBench 1.0 \citep{ReBench:2018} and Java 1.8.0\_191 Graal 0.43. Benchmarks were executed one by one to avoid interference between them. The analysis of the results and plots where generated using Python 3.7.3 and PGFPLOTS 1.16. To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, are available online.\footnote{\url{https://gitlab.ecs.vuw.ac.nz/isaac/Moth-Takikawa}}
 
 In previous work \cite{roberts-and-co-ecoop-2019}, we also compared the performance of untyped code on Moth against state-of-the-art VMs: Java, Node.js using the V8 JavaScript VM, and the Higgs JavaScript VM. Java was the fastest of these, and on average V8 was about 1.8x slower than Java, Moth was 2.3x slower, and Higgs was 10.4x slower.
-We believe, this makes Moth suitable for assessing the impact of type checking,
+We believe this makes Moth suitable for assessing the impact of type checking,
 because Moth's performance is close enough to state-of-the-art VMs,
-which avoids hiding of type check overheads in a slow baseline.
+which should make it harder to hide type checking overheads in a slow baseline.
 
 \section{Performance of Benchmark Configurations}
 \label{s-overall}
@@ -479,7 +487,7 @@ a couple of others (Fannkuch and DeltaBlue) are also outliers.
 %
 We believe that the 0\% and 100\% bounds are nonetheless a
 reasonable heuristic estimator in most cases, and we will
-examine further the outlying benchmarks.
+examine the outlying benchmarks further.
 
 
 Of particular note is that some of the graphs (Permute, Storage, Towers, and Richards) show bimodal performance profiles, that is, two separate roughly-horizontal lines. Presumably Moth can remove all the overhead from some configurations, but in others there must be one or more type checks that could not be optimised away. List shows three performance modes: the graph consists of three mostly flat lines, at about 1 times slower, 1.5 times slower, and 1.8 times slower than untyped code.
@@ -515,7 +523,7 @@ Figure \ref{f:pattern} shows the results of these experiments.
 % , together with patterns we manually identified.
 It shows a pair of graphs for a selection of ten benchmarks: it's associated typing lattice scatter plot and a column graph showing the results of these single type annotation experiments.
 
-The column graphs, right of the corresponding scatter plot, shows the execution time of configurations with only a single type annotation, the x-axis indicates the index of this annotation, thus the first column represents the first annotation, and the last column represents the last one (in the order they appear in the source code). The y-axes for the column graphs are the same as the associated scatter graphs.
+The column graphs, to the right of the corresponding scatter plot, show the execution time of configurations with only a single type annotation, the x-axis indicates the index of this annotation, thus the first column represents the first annotation, and the last column represents the last one (in the order they appear in the source code). The y-axes for the column graphs are the same as the associated scatter graphs.
 
 % SM: already said before
 % The column graphs show the execution times of each configuration for each individual annotation in a benchmark. The x-axis of the graphs indicates the index of this annotation in the order they appear in the source code. The first column represents the first annotation, and the last column represents the last one. The y-axes for the column graphs are the same as the associated scatter graphs, showing the execution time of each configuration.
@@ -523,7 +531,7 @@ The column graphs, right of the corresponding scatter plot, shows the execution 
 
 For each benchmark we highlighted one or two type annotations that seem to show a pattern for the typing lattice performance scatter plots, or in the case of SpectralNorm and Json had higher than usual columns. The identified types are those represented by the red and blue columns. The scatter plots are colour-coded accordingly: a red or blue circle represents configurations with the given type annotation present, but not both, purple circles represent configurations with both type annotations present, and grey circles represent those with neither. Though we exhaustively inspected such colour coded scatter plots for all 1,775 type annotations across all 21 benchmarks, the only patterns we noticed are those shown in \ref{f:pattern}.
 
-As can be seen, most of the time the patterns we found in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers and CD benchmarks, there is clearly a pattern where an individual type annotation (highlighted in red) appears responsible for the upper/slowest half of the typing lattice graphs. For Permute there is actually a significant performance \emph{increase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight increase in performance, but here this is caused by two type annotations (in red and blue); this effect is not cumulative, however: the purple dots are about the same height as the red and blue ones, so \emph{either} annotation is sufficient for the full benefit.
+As can be seen, most of the patterns we found in the typing lattice graphs correspond to outliers in the single type annotation column graphs. For the Snake, Towers and CD benchmarks, there is clearly a pattern where an individual type annotation (highlighted in red) appears responsible for the upper/slowest half of the typing lattice graphs. For Permute there is actually a significant performance \emph{increase}, indicated by the lower half of the lattice being highlighted in red. DeltaBlue and Go also show a slight increase in performance, but here this is caused by two type annotations (in red and blue); this effect is not cumulative, however: the purple dots are about the same height as the red and blue ones, so \emph{either} annotation is sufficient for the full benefit.
 
 List is interesting as it demonstrates that the red and blue type annotations both cause a significant decrease in performance, which is even greater when both are present. Richards is particularly odd as it shows a performance decrease that occurs when the red type annotation is present, but not the blue one. We had previously identified this benchmark and the aforementioned type annotations \cite{roberts-and-co-ecoop-2019} as being the worst case for Moth.
 
@@ -570,7 +578,8 @@ In this paper we have investigated how benchmarks can be
 repurposed to determine precisely which transient type checks are
 likely to cause performance effects,
 and for instance are currently not optimised by the just-in-time compiler.
-However, detailed analysis will be needed in order to identify exactly what causes such performance effects, such as that we previously did for the List benchmark \cite{roberts-and-co-ecoop-2019}.
+However, detailed analysis will be needed in order to identify exactly what causes such performance effects: we previously undertook such an analysis for the List benchmark \cite{roberts-and-co-ecoop-2019}.
+
 We observed that many of our benchmark results
 conducted under the Takikawa protocol 
 showed a characteristic bimodal performance profile: some
