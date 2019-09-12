@@ -19,13 +19,13 @@
 \usepackage{listings}
 \usepackage{xspace}
 
-\usepackage{collab}
+%\usepackage{collab}
 
-\collabAuthor{rr}{green!60!black}{Richard}
-\collabAuthor{sm}{red}{Stefan}
-\collabAuthor{kjx}{orange}{James}
-\collabAuthor{isaac}{blue}{Isaac}
-\collabAuthor{mwh}{purple}{Michael}
+%\collabAuthor{rr}{green!60!black}{Richard}
+%\collabAuthor{sm}{red}{Stefan}
+%\collabAuthor{kjx}{orange}{James}
+%\collabAuthor{isaac}{blue}{Isaac}
+%\collabAuthor{mwh}{purple}{Michael}
 
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -69,8 +69,7 @@
 
 \lstset{style=mystyle}
 
-\input{graphs/preamble}
-\setcopyright{none}
+\input{preamble}
 \bibliographystyle{ACM-Reference-Format}
 
 \begin{document}
@@ -129,20 +128,37 @@
 One form of type checking used in gradually typed language is
 \emph{transient type checking}: whenever an object `flows' through
 code with a type annotation, the object is dynamically checked to
-ensure it has the methods required by the annotation.
-
-Although na\"ive implementations of transient type checks have a high run-time overhead, just-in-time compilation and optimisation in virtual machines can eliminate much of this overhead.  Unfortunately
-the improvement is not uniform: while most type checks can be optimised
-away, some will significantly decrease a program's
-performance, and some may even increase it.  
+ensure it has the methods required by the annotation. 
+Just-in-time compilation and optimisation in virtual machines can eliminate much of the overhead of run-time transient type checks. 
+Unfortunately this optimisation is not uniform: some type checks will significantly decrease, or even increase, a program's performance.
 
 In this paper, we refine the so called ``Takikawa'' protocol, and use it to identify which type annotations have the greatest effects on performance. In particular, we show how graphing the performance of such benchmarks when varying which type annotations are present in the source code can be used to discern potential patterns in performance. We demonstrate our approach by testing the Moth virtual machine: for many of the benchmarks where Moth's transient type checking impacts performance, we have been able to identify one or two specific type annotations that are the likely cause. Without these type annotations, the performance impact of transient type checking becomes negligible.
 
-Using our technique programmers can optimise programs by removing expensive type checks, and VM engineers can identify new opportunities for compiler optimisation.
+Using our technique programmers can optimise programs by removing expensive type checks, and VM engineers can identify new opportunities for compiler optimisation.\pagebreak
 \end{abstract}
 
 
 %% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10011007.10010940.10011003.10011002</concept_id>
+<concept_desc>Software and its engineering~Software performance</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10011007.10011006.10011008.10011009.10011011</concept_id>
+<concept_desc>Software and its engineering~Object oriented languages</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+<concept>
+<concept_id>10011007.10011006.10011041.10011044</concept_id>
+<concept_desc>Software and its engineering~Just-in-time compilers</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
 \ccsdesc[500]{Software and its engineering~Software performance}
 \ccsdesc[300]{Software and its engineering~Object oriented languages}
 \ccsdesc[300]{Software and its engineering~Just-in-time compilers}
@@ -165,7 +181,7 @@ the object flows through, but not the return types or argument types of those me
 Unfortunately most gradual systems with run-time semantics, as opposed to type erasure as in TypeScript, impose significant run-time performance overheads. This has lead to a significant body of research to develop techniques to optimise gradual typing \citep{Vitousek2017,Muehlboeck2017,Bauman2017,Richards2017,Greenman2018}.
 
 This has also lead to a technique to evaluate the performance of gradual typing, the ``Takikawa'' protocol \cite{Takikawa2016,Greenman2019jfp,vitousek-transient-arXive-2019}. The Takikawa protocol was created to measure the run-time cost of gradual typing by testing various configurations of typed and untyped code. This approach was designed to characterise how the amount of typed and untyped code influences performance.
-In particular, Takikawa protocol evaluations often show that how simply adding more type annotations does not always produce a uniform effect on performance. Here we adapt their approach in order to identify individual type annotations that may be responsible for performance effects.
+In particular, Takikawa protocol evaluations often show that simply adding more type annotations does not always produce a uniform effect on performance. Here we adapt their approach in order to identify individual type annotations that may be responsible for performance effects.
 
 This paper builds upon our recent work on optimising transient type checks \cite{Roberts2017,roberts-and-co-ecoop-2019} to make the following contributions:
 \begin{itemize}
@@ -357,7 +373,7 @@ Reticulated Python \cite{reticPython2014,monotonic2015,Vitousek2017}.
 This means in Grace $N$ is the number of type annotations in the program, so it is
 infeasible to check an entire lattice, even for a moderately sized benchmark.
 Vitousek et al.\ therefore modified the Takikawa protocol for
-these kinds of languages by taking an approach based on sampling
+these kinds of languages by using a different form of sampling
 \cite{vitousek-transient-arXive-2019}.  The Takikawa-Vitousek protocol
 divides the number of type annotations in a fully-typed program into
 a maximum of 100 intervals, and then randomly generates ten programs within
@@ -423,7 +439,7 @@ from the gradual-typing literature.
 %\ie, static type annotations are present at almost all possible points.
 %ISAAC: I changed this as it was misleading, in a few cases, some of the type annotations are in fact "Unknown", which is exactly what my "removing" of type annotations places
 
-We added type annotations to every benchmark, aiming to use the most appropriate (most specific) annotation for each declaration.
+We added type annotations to every benchmark, aiming to use the most appropriate (\ie most specific) annotation for each declaration.
 %KJX: I changed it too because I though that was also misleading.
 
 In our previous work, we \cite{roberts-and-co-ecoop-2019}
@@ -441,14 +457,14 @@ checks disabled against an execution that has all checks enabled.
 
 \subsection{Experimental Set Up}
 To account for the complex warmup behaviour of modern systems \citep{Barrett:2017:VMW} as well as
-the non-determinism caused by \eg garbage collection and cache effects, we ran each benchmark for 1000 iterations in the same invocation of Moth, and discard the first 350 iterations to ignore warmup JIT compilation.
+the non-determinism caused by \eg garbage collection and cache effects, we ran each benchmark for 1000 iterations in the same invocation of Moth, and discard the first 350 iterations to ignore warmup JIT compilation. Our previous work  identified this as a suitable cut off \cite{roberts-and-co-ecoop-2019}.
 
 Though outliers remain visible in the plots for each individual benchmark, the largest 95\% confidence interval we obtained (over the mean time after warmup) for any of experiments was $\pm8.3\%$ (for the PyStone benchmark).
 
 All our experiments used the same machine, Graal, and Moth as previously; the machine has two Intel Xeon E5-2620 v3 2.40GHz, with 6 cores each, for a total of 24 hyperthreads.
 The machine was running Ubuntu Linux 16.04.6, with Kernel 4.4, and we used ReBench 1.0 \citep{ReBench:2018} and Java 1.8.0\_191 Graal 0.43. Benchmarks were executed one by one to avoid interference between them. The analysis of the results and plots where generated using Python 3.7.3 and PGFPLOTS 1.16. To enable reproductions, the scripts we used to generate and run our experiments, including the source code for all the configurations tested, are available online.\footnote{\url{https://gitlab.ecs.vuw.ac.nz/isaac/Moth-Takikawa}}
 
-In previous work \cite{roberts-and-co-ecoop-2019}, we also compared the performance of untyped code on Moth against state-of-the-art VMs: Java, Node.js using the V8 JavaScript VM, and the Higgs JavaScript VM. Java was the fastest of these, and on average V8 was about 1.8x slower than Java, Moth was 2.3x slower, and Higgs was 10.4x slower.
+In our previous work \cite{roberts-and-co-ecoop-2019}, we also compared the performance of untyped code on Moth against state-of-the-art VMs: Java, Node.js using the V8 JavaScript VM, and the Higgs JavaScript VM. Java was the fastest of these, and on average V8 was about 1.8x slower than Java, Moth was 2.3x slower, and Higgs was 10.4x slower.
 We believe this makes Moth suitable for assessing the impact of type checking,
 because Moth's performance is close enough to state-of-the-art VMs,
 which should make it harder to hide type checking overheads in a slow baseline.
@@ -457,7 +473,7 @@ which should make it harder to hide type checking overheads in a slow baseline.
 \label{s-overall}
 
 \begin{figure*}
-	\input{graphs/full-scatter}
+	\input{full-scatter}
 	\caption{Graphs of (at most) 102 configurations in the typing lattices for each benchmark. Time is measured as the mean of the 351\textsuperscript{st} to the 1,000\textsuperscript{th} benchmark iteration under a single invocation of Moth (lower is better).}
 	\label{f:full}
 \end{figure*}
@@ -497,7 +513,7 @@ Of particular note is that some of the graphs (Permute, Storage, Towers, and Ric
 \section{Identifying Type Annotations With Signification Performance Impact}
 \label{s-individual}
 \begin{figure*}
-	\input{graphs/pattern}
+	\input{pattern}
 	\caption{Pairs of colour coded scatter and column graphs. The scatter graphs represent the performance of a sample of the typing lattices. The column graphs show the performance of every configuration with only one type annotation. The scatter plots and column graphs are colour coded based on whether a particular type annotation or two are present in the source code.}
 	\label{f:pattern}		
 \end{figure*}
@@ -559,7 +575,7 @@ guided by run-time feedback, cost models, or heuristics.
 Their large body of work \citep{Isaacs:2014:PerfViz} uses various approaches,
 though, we are not aware of work that has used an approach similar to ours.
 
-At the moment, our approach to identifying type annotations that case
+At the moment, our approach to identifying type annotations that cause
 performance anomalies is not integrated into a development environment.
 Though, for instance Optimization Coaching
 \citep{St-Amour:2012:OCO} is a promising direction.
@@ -577,7 +593,7 @@ we need to run full experiments to get the necessary information.
 In this paper we have investigated how benchmarks can be
 repurposed to determine precisely which transient type checks are
 likely to cause performance effects,
-and for instance are currently not optimised by the just-in-time compiler.
+and are currently not optimised away by the just-in-time compiler.
 However, detailed analysis will be needed in order to identify exactly what causes such performance effects: we previously undertook such an analysis for the List benchmark \cite{roberts-and-co-ecoop-2019}.
 
 We observed that many of our benchmark results
